@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>DaySpaPet.Maui</title>
     <base href="/" />
+    <link rel="stylesheet" href="/_content/Microsoft.FluentUI.AspNetCore.Components/css/reboot.css" />
     <link rel="stylesheet" href="/_content/DaySpaPet.Razor.Shared/css/bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="/_content/DaySpaPet.Razor.Shared/css/app.css" />
     <link rel="stylesheet" href="DaySpaPet.Maui.styles.css" />
@@ -15,8 +16,15 @@
 
     <div class="status-bar-safe-area"></div>
 
-    <div id="app">Loading...</div>
+    <div id="app">
+        <svg class="loading-progress">
+            <circle r="40%" cx="50%" cy="50%" />
+            <circle r="40%" cx="50%" cy="50%" />
+        </svg>
+        <div class="loading-progress-text"></div>
+    </div>
 
+    <script app-name="DaySpaPet.Maui" src="./_content/Microsoft.FluentUI.AspNetCore.Components/js/initializersLoader.webview.js"></script>
     <script src="_framework/blazor.webview.js" autostart="false"></script>
 
 </body>

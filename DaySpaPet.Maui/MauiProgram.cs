@@ -1,7 +1,7 @@
 ﻿using DaySpaPet.Razor.Shared;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace DaySpaPet.Maui;
 
@@ -20,9 +20,9 @@ public static class MauiProgram
         builder.Services.AddBlazorWebViewDeveloperTools();
 		builder.Logging.AddDebug();
 #endif
+        builder.Services.AddFluentUIComponents();
+
         builder.Services.AddMauiBlazorWebView();
-        builder.Services.AddAuthorizationCore();
-        builder.Services.TryAddScoped<AuthenticationStateProvider, ExternalAuthStateProvider>();
 
         return builder.Build();
     }
