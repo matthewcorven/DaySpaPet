@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaySpaPet.Web.Server", "DaySpaPet.Web.Server\DaySpaPet.Web.Server.csproj", "{F23F84D5-6082-49F9-B48E-E2ED0563FA9B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaySpaPet.Web.Wasm", "DaySpaPet.Web.Wasm\DaySpaPet.Web.Wasm.csproj", "{94B50EDB-8034-4AA2-9C1B-4EA1C0B3D6D7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaySpaPet.Razor.Shared", "DaySpaPet.Razor.Shared\DaySpaPet.Razor.Shared.csproj", "{39100690-870D-4F43-9BC6-E5E2386BD4B1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaySpaPet.Maui", "DaySpaPet.Maui\DaySpaPet.Maui.csproj", "{61DECF06-3862-4865-9C97-F36A2E1DEBA9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2F48D1CB-C5C8-4D95-9B3E-BF5DB3B038C7}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		LICENSE.md = LICENSE.md
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F23F84D5-6082-49F9-B48E-E2ED0563FA9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F23F84D5-6082-49F9-B48E-E2ED0563FA9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F23F84D5-6082-49F9-B48E-E2ED0563FA9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F23F84D5-6082-49F9-B48E-E2ED0563FA9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94B50EDB-8034-4AA2-9C1B-4EA1C0B3D6D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94B50EDB-8034-4AA2-9C1B-4EA1C0B3D6D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94B50EDB-8034-4AA2-9C1B-4EA1C0B3D6D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94B50EDB-8034-4AA2-9C1B-4EA1C0B3D6D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39100690-870D-4F43-9BC6-E5E2386BD4B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39100690-870D-4F43-9BC6-E5E2386BD4B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39100690-870D-4F43-9BC6-E5E2386BD4B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39100690-870D-4F43-9BC6-E5E2386BD4B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61DECF06-3862-4865-9C97-F36A2E1DEBA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61DECF06-3862-4865-9C97-F36A2E1DEBA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61DECF06-3862-4865-9C97-F36A2E1DEBA9}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{61DECF06-3862-4865-9C97-F36A2E1DEBA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61DECF06-3862-4865-9C97-F36A2E1DEBA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61DECF06-3862-4865-9C97-F36A2E1DEBA9}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {29A69E5E-7A0C-44EB-96A5-0988DECFB154}
+	EndGlobalSection
+EndGlobal
