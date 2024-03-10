@@ -1,6 +1,5 @@
 ﻿using DaySpaPet.Razor.Shared;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace DaySpaPet.Maui;
@@ -11,7 +10,7 @@ public static class MauiProgram
     {
         var builder = MauiApp.CreateBuilder();
 
-        builder.UseMauiApp<App>()
+        builder.UseMauiApp<DaySpaPet.Maui.App>()
             .ConfigureFonts(fonts => {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
             });
@@ -21,6 +20,7 @@ public static class MauiProgram
 		builder.Logging.AddDebug();
 #endif
         builder.Services.AddFluentUIComponents();
+        builder.Services.AddDaySpaAppComponents();
 
         builder.Services.AddMauiBlazorWebView();
 

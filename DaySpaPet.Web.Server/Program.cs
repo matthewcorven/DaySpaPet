@@ -1,4 +1,4 @@
-using DaySpaPet.Web.Server;
+using DaySpaPet.Razor.Shared;
 using Microsoft.FluentUI.AspNetCore.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +9,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddHttpClient();
 builder.Services.AddFluentUIComponents();
+builder.Services.AddDaySpaAppComponents();
 
 var app = builder.Build();
 
@@ -25,7 +26,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-app.MapRazorComponents<App>()
+app.MapRazorComponents<DaySpaPet.Web.Server.App>()
     .AddInteractiveServerRenderMode()
     .AddAdditionalAssemblies(typeof(DaySpaPet.Razor.Shared.Pages.Index).Assembly);
 
