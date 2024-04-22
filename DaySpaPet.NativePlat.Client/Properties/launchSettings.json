@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Windows Machine": {
+      "commandName": "MsixPackage",
+      "environmentVariables": {
+        "FORCE_RAISE_DEBUGGER": "true"
+      },
+      "nativeDebugging": false
+    }
+  }
+}

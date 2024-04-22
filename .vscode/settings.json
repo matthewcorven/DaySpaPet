@@ -1,0 +1,13 @@
+{
+    "cSpell.words": [
+        "appsettings"
+    ],
+    "disable-copilot-comment-completions.globPatternRules": [
+        "**/COMMIT_EDITMSG"
+    ],
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#252248",
+        "titleBar.activeBackground": "#333065",
+        "titleBar.activeForeground": "#FCFCFE"
+    },
+}

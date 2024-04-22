@@ -1,0 +1,56 @@
+﻿@page "/counter"
+@using System.Diagnostics
+@rendermode InteractiveAuto
+@inject IHostEnvironment HostEnvironment
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>
+
+<ErrorBoundary>
+    <ChildContent>
+        <p role="status">Current count: <FluentBadge Appearance="Appearance.Neutral">@currentCount</FluentBadge></p>
+        <FluentButton Appearance="Appearance.Accent" @onclick="IncrementCount">Increment (throw on every 5th)</FluentButton>
+    </ChildContent>
+    <ErrorContent Context="ex">
+        @if (HostEnvironment.IsProduction())
+        {
+            <p class="blazor-error-heading">😈 A rotten gremlin got us. Sorry!</p>
+        }
+        else
+        {
+            <div class="blazor-error-boundary">
+                <dl>
+                    <dt>Error Type:</dt>
+                    <dd>@ex.GetType().FullName</dd>
+                    <dt>Message:</dt>
+                    <dd>@ex.Message</dd>
+                    <dt>Stack Trace:</dt>
+                    <dd>@ex.StackTrace</dd>
+                </dl>
+            </div>
+        }
+    </ErrorContent>
+
+</ErrorBoundary>
+
+<hr />
+<h3>Note</h3>
+<p role="contentinfo">
+    Every 5th click will throw an exception as a demonstration of the error boundary.
+</p>
+
+@code {
+    private int currentCount = 0;
+
+    [DebuggerStepThrough] // On this demo page, we don't care to break on this exception
+    private void IncrementCount()
+    {
+        currentCount++;
+
+        if (currentCount % 5 is 0)
+        {
+            throw new InvalidOperationException($"{currentCount} is a multiple of 5");
+        }
+    }
+}

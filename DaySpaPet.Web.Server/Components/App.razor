@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="icon" type="image/png" href="/_content/DaySpaPet.Web/favicon.png" />
+    <link rel="stylesheet" href="/_content/Microsoft.FluentUI.AspNetCore.Components/css/reboot.css" />
+    <link rel="stylesheet" href="/_content/DaySpaPet.Web/css/app.css" />
+    <link rel="stylesheet" href="app.css" />
+    <link rel="stylesheet" href="DaySpaPet.Web.Server.styles.css" />
+    <HeadOutlet />
+</head>
+
+<body>
+    <DaySpaPet.Web.Routes />
+
+    <script>
+        function fluentUiShimLoaded() {
+            Array.from(document.querySelectorAll('.fluent-ui-rendering-delay-wait')).forEach(function (el) {
+                el.classList.remove('fluent-ui-rendering-delay-wait');
+            });
+        }
+
+        // Function to handle mutations
+        function handleMutations(mutations) {
+            mutations.forEach(mutation => {
+                console.log(`Mutation type: ${mutation.type}`);
+                if (mutation.type === 'childList') {
+                    console.log('Added nodes:', mutation.addedNodes);
+                    console.log('Removed nodes:', mutation.removedNodes);
+                } else if (mutation.type === 'attributes') {
+                    console.log(`Attribute changed: ${mutation.attributeName}`);
+                }
+            });
+        }
+
+        // Set up the observer with a configuration and the callback function
+        window.observer = new MutationObserver(handleMutations);
+
+    </script>
+
+    <script src="_framework/blazor.web.js"></script>
+</body>    
+
+</html>

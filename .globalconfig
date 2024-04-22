@@ -1,0 +1,53 @@
+﻿# (all platforms) Top level entry required to mark this as a global AnalyzerConfig file
+#
+is_global = true
+
+# Good place for .NET project-scoped code analysis rules
+
+#### Diagnostic configuration ####
+## Borrowed from https://github.com/dotnet/runtime/blob/27214a0787f9a0ee95c799639431d9d16c25d1ac/eng/CodeAnalysis.src.globalconfig
+
+# CA2007: Consider calling ConfigureAwait on the awaited task
+dotnet_diagnostic.CA2007.severity = none
+
+# NEVER worry about null checking as defined ca1062 which came in the days before ArgumentNullException.ThrowIfNull. 
+# We have a better way now (ca1510) check nullable parameters for null.
+# CA1062: In externally visible method... validate parameter ... is non-null before using it. If appropriate, throw an 'ArgumentNullException' when the argument is 'null'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1062)
+dotnet_diagnostic.ca1062.severity = none
+
+# CA1507: Use nameof to express symbol names
+dotnet_diagnostic.CA1507.severity = warning
+
+# CA1508: Avoid dead conditional code
+dotnet_diagnostic.CA1508.severity = none
+
+# CA1509: Invalid entry in code metrics rule specification file
+dotnet_diagnostic.CA1509.severity = none
+
+# CA1510: Use ArgumentNullException throw helper
+dotnet_diagnostic.CA1510.severity = error
+
+# CA1511: Use ArgumentException throw helper
+dotnet_diagnostic.CA1511.severity = warning
+
+# CA1512: Use ArgumentOutOfRangeException throw helper
+dotnet_diagnostic.CA1512.severity = warning
+
+# CA1513: Use ObjectDisposedException throw helper
+dotnet_diagnostic.CA1513.severity = warning
+
+# CA1514: Avoid redundant length argument
+dotnet_diagnostic.CA1514.severity = warning
+
+# CA1716: Identifiers should not match keywords
+dotnet_diagnostic.CA1716.severity = error
+
+# NEVER bother with concerns about needing "high-performance" logging (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1848)
+dotnet_diagnostic.ca1848.severity = none
+
+# ALWAYS provide template as a static expression; Ex: `LoggerExtensions.LogInformation(ILogger, string, params object[])`
+dotnet_diagnostic.CA2254.severity = error
+
+# CA5392: Use DefaultDllImportSearchPaths attribute for P/Invokes
+dotnet_diagnostic.CA5392.severity = none
+

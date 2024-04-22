@@ -1,0 +1,7 @@
+# .NET iOS file-scoped code analysis rules
+#
+
+[*.cs]
+
+# ALWAYS Rename type name AppDelegate so that it does not end in 'Delegate' (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1711)
+dotnet_diagnostic.CA1711.severity = error

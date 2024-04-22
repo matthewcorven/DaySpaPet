@@ -3,21 +3,42 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaySpaPet.UseCases", "DaySpaPet.UseCases\DaySpaPet.UseCases.csproj", "{8CDB5BC9-DC38-4508-9B3D-FEF882AB09AB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaySpaPet.Web", "DaySpaPet.Web\DaySpaPet.Web.csproj", "{39100690-870D-4F43-9BC6-E5E2386BD4B1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaySpaPet.Web.Client", "DaySpaPet.Web.Client\DaySpaPet.Web.Client.csproj", "{94B50EDB-8034-4AA2-9C1B-4EA1C0B3D6D7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaySpaPet.NativePlat.Client", "DaySpaPet.NativePlat.Client\DaySpaPet.NativePlat.Client.csproj", "{61DECF06-3862-4865-9C97-F36A2E1DEBA9}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaySpaPet.Web.Server", "DaySpaPet.Web.Server\DaySpaPet.Web.Server.csproj", "{F23F84D5-6082-49F9-B48E-E2ED0563FA9B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaySpaPet.Web.Wasm", "DaySpaPet.Web.Wasm\DaySpaPet.Web.Wasm.csproj", "{94B50EDB-8034-4AA2-9C1B-4EA1C0B3D6D7}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaySpaPet.Razor.Shared", "DaySpaPet.Razor.Shared\DaySpaPet.Razor.Shared.csproj", "{39100690-870D-4F43-9BC6-E5E2386BD4B1}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaySpaPet.Maui", "DaySpaPet.Maui\DaySpaPet.Maui.csproj", "{61DECF06-3862-4865-9C97-F36A2E1DEBA9}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2F48D1CB-C5C8-4D95-9B3E-BF5DB3B038C7}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0-Solution Items", "0-Solution Items", "{2F48D1CB-C5C8-4D95-9B3E-BF5DB3B038C7}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
+		.globalconfig = .globalconfig
+		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
+		global.json = global.json
 		LICENSE.md = LICENSE.md
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2-Application", "2-Application", "{A8A049E5-2BBA-43C4-B530-4E4C47913CF9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1-Core", "1-Core", "{A8DD77C3-BFDF-4E0A-BACD-1648A1F929B3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaySpaPet.Core", "DaySpaPet.Core\DaySpaPet.Core.csproj", "{2AAB898D-AFA9-406F-9598-7C1DD990B954}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3-Presentation", "3-Presentation", "{D438EBAB-4AFB-4CD6-950A-28F30466C482}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaySpaPet.Infrastructure", "DaySpaPet.Infrastructure\DaySpaPet.Infrastructure.csproj", "{F7C33093-DA7A-4365-ADC2-701EFE4622FD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaySpaPet.SharedKernel", "DaySpaPet.SharedKernel\DaySpaPet.SharedKernel.csproj", "{BF9F37FA-7327-4013-A1BB-EA9029EE33EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DaySpaPet.Wasm", "DaySpaPet.Wasm\DaySpaPet.Wasm.csproj", "{AF8779C8-F5EA-4932-85A1-A17CC5738806}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,27 +46,58 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F23F84D5-6082-49F9-B48E-E2ED0563FA9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F23F84D5-6082-49F9-B48E-E2ED0563FA9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F23F84D5-6082-49F9-B48E-E2ED0563FA9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F23F84D5-6082-49F9-B48E-E2ED0563FA9B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{94B50EDB-8034-4AA2-9C1B-4EA1C0B3D6D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{94B50EDB-8034-4AA2-9C1B-4EA1C0B3D6D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{94B50EDB-8034-4AA2-9C1B-4EA1C0B3D6D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{94B50EDB-8034-4AA2-9C1B-4EA1C0B3D6D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CDB5BC9-DC38-4508-9B3D-FEF882AB09AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CDB5BC9-DC38-4508-9B3D-FEF882AB09AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CDB5BC9-DC38-4508-9B3D-FEF882AB09AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CDB5BC9-DC38-4508-9B3D-FEF882AB09AB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{39100690-870D-4F43-9BC6-E5E2386BD4B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{39100690-870D-4F43-9BC6-E5E2386BD4B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39100690-870D-4F43-9BC6-E5E2386BD4B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39100690-870D-4F43-9BC6-E5E2386BD4B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94B50EDB-8034-4AA2-9C1B-4EA1C0B3D6D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94B50EDB-8034-4AA2-9C1B-4EA1C0B3D6D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94B50EDB-8034-4AA2-9C1B-4EA1C0B3D6D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94B50EDB-8034-4AA2-9C1B-4EA1C0B3D6D7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{61DECF06-3862-4865-9C97-F36A2E1DEBA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{61DECF06-3862-4865-9C97-F36A2E1DEBA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61DECF06-3862-4865-9C97-F36A2E1DEBA9}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{61DECF06-3862-4865-9C97-F36A2E1DEBA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61DECF06-3862-4865-9C97-F36A2E1DEBA9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{61DECF06-3862-4865-9C97-F36A2E1DEBA9}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{F23F84D5-6082-49F9-B48E-E2ED0563FA9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F23F84D5-6082-49F9-B48E-E2ED0563FA9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F23F84D5-6082-49F9-B48E-E2ED0563FA9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F23F84D5-6082-49F9-B48E-E2ED0563FA9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AAB898D-AFA9-406F-9598-7C1DD990B954}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AAB898D-AFA9-406F-9598-7C1DD990B954}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AAB898D-AFA9-406F-9598-7C1DD990B954}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AAB898D-AFA9-406F-9598-7C1DD990B954}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7C33093-DA7A-4365-ADC2-701EFE4622FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7C33093-DA7A-4365-ADC2-701EFE4622FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7C33093-DA7A-4365-ADC2-701EFE4622FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7C33093-DA7A-4365-ADC2-701EFE4622FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF9F37FA-7327-4013-A1BB-EA9029EE33EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF9F37FA-7327-4013-A1BB-EA9029EE33EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF9F37FA-7327-4013-A1BB-EA9029EE33EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF9F37FA-7327-4013-A1BB-EA9029EE33EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF8779C8-F5EA-4932-85A1-A17CC5738806}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF8779C8-F5EA-4932-85A1-A17CC5738806}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF8779C8-F5EA-4932-85A1-A17CC5738806}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF8779C8-F5EA-4932-85A1-A17CC5738806}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8CDB5BC9-DC38-4508-9B3D-FEF882AB09AB} = {A8DD77C3-BFDF-4E0A-BACD-1648A1F929B3}
+		{39100690-870D-4F43-9BC6-E5E2386BD4B1} = {D438EBAB-4AFB-4CD6-950A-28F30466C482}
+		{94B50EDB-8034-4AA2-9C1B-4EA1C0B3D6D7} = {D438EBAB-4AFB-4CD6-950A-28F30466C482}
+		{61DECF06-3862-4865-9C97-F36A2E1DEBA9} = {D438EBAB-4AFB-4CD6-950A-28F30466C482}
+		{F23F84D5-6082-49F9-B48E-E2ED0563FA9B} = {D438EBAB-4AFB-4CD6-950A-28F30466C482}
+		{2AAB898D-AFA9-406F-9598-7C1DD990B954} = {A8DD77C3-BFDF-4E0A-BACD-1648A1F929B3}
+		{F7C33093-DA7A-4365-ADC2-701EFE4622FD} = {A8A049E5-2BBA-43C4-B530-4E4C47913CF9}
+		{BF9F37FA-7327-4013-A1BB-EA9029EE33EE} = {A8DD77C3-BFDF-4E0A-BACD-1648A1F929B3}
+		{AF8779C8-F5EA-4932-85A1-A17CC5738806} = {D438EBAB-4AFB-4CD6-950A-28F30466C482}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {29A69E5E-7A0C-44EB-96A5-0988DECFB154}

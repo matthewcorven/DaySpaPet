@@ -1,0 +1,4 @@
+# .NET MAUI file-scoped code analysis rules
+#
+
+[*.cs]

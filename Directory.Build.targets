@@ -1,0 +1,8 @@
+<Project>
+  <ItemGroup>
+    <!-- Glob pattern to match files under obj directory -->
+    <Compile Update="obj\**\*.cs">
+      <Generated>true</Generated>
+    </Compile>
+  </ItemGroup>
+</Project>
