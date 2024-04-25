@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DaySpaPet.Web\DaySpaPet.Web.csproj" />
-    <ProjectReference Include="..\DaySpaPet.Web.Client\DaySpaPet.Web.Client.csproj" />
   </ItemGroup>
 
 </Project>

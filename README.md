@@ -89,3 +89,7 @@ In the example above, the word `native` is a reserved keyword in Java, so it sho
 ref: https://developer.android.com/studio/build/application-id
 ref: https://docs.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html
 ref: https://github.com/xamarin/xamarin-android/issues/7489
+
+2. Entity Framework requires a default parameterless constructor, or a paramaterized constructor where its parameter names and types matches those of the mapped properties.
+
+ref: https://learn.microsoft.com/en-us/ef/core/modeling/constructors#binding-to-mapped-properties

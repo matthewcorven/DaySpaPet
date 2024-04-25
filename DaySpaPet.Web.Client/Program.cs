@@ -18,6 +18,7 @@ internal static class Program
         // Add device specific services used by Razor Class Library (DaySpaPet.Web)
         builder.Services.AddScoped<IFormFactor, FormFactor>();
 
+        builder.RootComponents.Add<DaySpaPet.Web.Routes>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
 
         builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });

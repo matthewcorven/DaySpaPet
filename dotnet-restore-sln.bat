@@ -13,9 +13,6 @@ cd ..
 cd ./DaySpaPet.Web
 dotnet restore
 cd ..
-cd ./DaySpaPet.Web.Client
-dotnet restore
-cd ..
-cd ./DaySpaPet.Web.Server
+cd ./DaySpaPet.Wasm
 dotnet restore
 cd ..

@@ -1,0 +1,22 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new Fluent Blazor app.
+
+<Component1></Component1>
+
+<input name="example-autofocus" @ref=Control />
+
+@code {
+    [Parameter]
+    public ElementReference Control { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await Control.FocusAsync();
+    }
+}
