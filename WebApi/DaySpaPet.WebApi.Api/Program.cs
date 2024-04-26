@@ -35,7 +35,7 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
   options.MinimumSameSitePolicy = SameSiteMode.None;
 });
 
-string? connectionString = builder.Configuration.GetConnectionString("SqlServerConnection");
+string? connectionString = builder.Configuration.GetConnectionString("DaySpaPetDb");
 builder.Services.AddDbContext<AppDbContext>(options =>
           options.UseSqlServer(connectionString));
 
@@ -90,9 +90,7 @@ app.UseHttpsRedirection();
 // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
 //app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"));
 
-#if DEBUG
-EnsureDatabaseCreated(app);
-#endif
+BootstrapDatabase(app);
 
 app.Run();
 
@@ -110,7 +108,7 @@ void ConfigureMediatR()
   builder.Services.AddScoped<IDomainEventDispatcher, MediatRDomainEventDispatcher>();
 }
 
-void EnsureDatabaseCreated(WebApplication app)
+void BootstrapDatabase(WebApplication app)
 {
   using (var scope = app.Services.CreateScope())
   {
@@ -120,8 +118,37 @@ void EnsureDatabaseCreated(WebApplication app)
     try
     {
       var context = services.GetRequiredService<AppDbContext>();
-      //                    context.Database.Migrate();
-      var created = context.Database.EnsureCreated();
+      var loggerFactory = new LoggerFactory();
+      var logger = loggerFactory.CreateLogger(app.GetType());
+
+      var dbConfig = builder.Configuration.GetSection("Infrastructure:Databases:DaySpaPetDb");
+
+      bool? dbWasDropped = null;
+      if (dbConfig.HasTruthySectionValue("Drop"))
+      { 
+        logger.LogInformation($"Dropping database because the environment variable \"Drop\" has truthy value");
+        dbWasDropped = context.Database.EnsureDeleted();
+      } 
+      if (dbConfig.HasTruthySectionValue("MustExist"))
+      {
+        logger.LogInformation($"Ensuring database exists because the environment variable \"MustExist\" has truthy value");
+        context.Database.EnsureCreated();
+
+        if (dbConfig.HasTruthySectionValue("RunAnyPendingMigrations"))
+        { 
+          logger.LogInformation($"Initatiing any pending database migrations because the environment variable \"RunAnyPendingMigrations\" has truthy value");
+          context.Database.Migrate();
+        }
+      }
+      else
+      {
+        if (dbWasDropped!.Value)
+        {
+          logger.LogInformation($"Exiting early: Database does not exist, and also the environment variable \"MustExist\" has falsy value");
+          Environment.Exit(0);
+        }
+      }
+      
     }
     catch (Exception ex)
     {

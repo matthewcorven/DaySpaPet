@@ -32,9 +32,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaySpaPet.WebApi.Infrastruc
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0-Solution Items", "0-Solution Items", "{65BFDAA6-2C78-4A47-ACF4-F5B801ACBFAD}"
 	ProjectSection(SolutionItems) = preProject
+		WebApi\.dockerignore = WebApi\.dockerignore
 		WebApi\Directory.Build.props = WebApi\Directory.Build.props
 		WebApi\Directory.Build.targets = WebApi\Directory.Build.targets
 		WebApi\Directory.Packages.props = WebApi\Directory.Packages.props
+		WebApi\Dockerfile = WebApi\Dockerfile
 	EndProjectSection
 EndProject
 Global

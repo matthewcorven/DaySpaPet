@@ -75,6 +75,12 @@ block-beta
 
 	> Failure to do so will result in the app running in Production mode, which will not display detailed error messages.
 
+1. Bootstrap docker
+```bash
+cd ./WebApi/
+docker build -t dayspapet_web_api_api .
+```
+
 ## Lessons Learned the Hard Way
 
 1. Be careful setting your MAUI project's AndroidManifest.xml ApplicationId value. Visual Studio's manifest editor won't warn you like Android Studio does about Java reserved keywords that should never be included as individual words. Doing so results in a compile-time error like:
