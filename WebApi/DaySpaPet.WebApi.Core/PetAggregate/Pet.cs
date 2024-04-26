@@ -105,17 +105,14 @@ public class Pet : EntityBase, IAggregateRoot
 
   public void SetDeathDate(DateOnly? newDeathDate)
   {
+    DeathDate = newDeathDate is not null
+      ? Guard.Against.DateOnlyIsNotAfter(newDeathDate.Value,
+        DateOnly.FromDateTime(DateTime.Today),
+        nameof(newDeathDate))
+      : null;
     if (newDeathDate is not null)
     {
-      DeathDate = newDeathDate is not null
-        ? Guard.Against.DateOnlyIsNotAfter(newDeathDate.Value,
-          DateOnly.FromDateTime(DateTime.Today),
-          nameof(newDeathDate))
-        : null;
-      if (newDeathDate is not null)
-      {
-        SetStatus(PetStatus.Inactive);
-      }
+      SetStatus(PetStatus.Inactive);
     }
   }
 
