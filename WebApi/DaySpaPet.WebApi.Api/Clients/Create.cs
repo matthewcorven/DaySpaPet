@@ -31,8 +31,8 @@ public class Create : Endpoint<CreateClientRequest, CreateClientResponse>
       //s.Description = "Create a new Client. A valid name is required.";
       s.ExampleRequest = new CreateClientRequest
       {
-        // TODO: Generate from Bogus. Ideally, it would be same instance of a
-        // faker used by database seeder, yet using its own seed local to this
+        // TODO: Generate from Bogus. Ideally, it would share underlying structure
+        // of faker used by database seeder, yet using its own seed local to this
         // line of code, thus ensuring future generated values are deterministic
         // so that they only change when properties are added/removed/changed.
         FirstName = "Client Name"
