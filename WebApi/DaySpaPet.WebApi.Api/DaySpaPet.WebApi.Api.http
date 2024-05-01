@@ -1,6 +1,17 @@
 @DaySpaPet.WebApi.Api_HostAddress = http://localhost:5026
 
-GET {{DaySpaPet.WebApi.Api_HostAddress}}/weatherforecast/
+### Get all clients (up to server's maximum record count)
+
+GET {{DaySpaPet.WebApi.Api_HostAddress}}/Clients/
 Accept: application/json
 
-###
+### Get first 10 clients
+
+GET {{DaySpaPet.WebApi.Api_HostAddress}}/Clients?take=10
+Accept: application/json
+
+### Get second 10 clients
+
+GET {{DaySpaPet.WebApi.Api_HostAddress}}/Clients?skip=10&take=10
+Accept: application/json
+

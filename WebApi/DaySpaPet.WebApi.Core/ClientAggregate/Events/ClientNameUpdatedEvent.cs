@@ -1,4 +1,4 @@
-﻿using Ardalis.SharedKernel;
+﻿using DaySpaPet.WebApi.SharedKernel;
 
 namespace DaySpaPet.WebApi.Core.ClientAggregate.Events;
 public class ClientNameUpdatedEvent(Client client, string newFirstName, string newLastName, string oldFirstName, string oldLastName) : DomainEventBase

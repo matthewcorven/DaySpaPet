@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using NodaTime;
 
 namespace DaySpaPet.WebApi.SharedKernel;
@@ -9,14 +10,14 @@ namespace DaySpaPet.WebApi.SharedKernel;
 /// <ref>https://nodatime.org/3.1.x/api/NodaTime.Instant.html</ref>
 /// <ref>https://nodatime.org/3.1.x/api/NodaTime.LocalDateTime.html</ref>
 /// <ref>https://www.youtube.com/watch?v=ZLJLfImuFqM</ref>
+[ComplexType]
 public record CapturedDateTime
 {
-  public Instant Universal { get; set; } // SQL Server datetimeoffset, PostgreSQL "timestamp with time zone", where "with time zone" actually meants "in UTC"
-  public Offset UtcOffset { get; set; } // SQL Server float, PostgreSQL double precision
+  public Instant UtcInstant { get; set; } // SQL Server datetimeoffset, PostgreSQL "timestamp with time zone", where "with time zone" actually meants "in UTC"
   public bool IsDaylightSavingTime { get; set; } // SQL Server bit, PostgreSQL boolean
   [Required]
   public required string TimeZoneId { get; set; } // SQL Server nvarchar(100), PostgreSQL text
-  public LocalDateTime Local { get; set; } // SQL Server datetime2, PostgreSQL "timestamp without time zone"
+  public LocalDateTime LocalOriginDateTime { get; set; } // SQL Server datetime2, PostgreSQL "timestamp without time zone"
 
   public static CapturedDateTime CaptureFromLocalBclDateTime(DateTime localDateTime, bool isDst, string timeZoneId)
   {
@@ -29,30 +30,22 @@ public record CapturedDateTime
       throw new ArgumentException("TimeZoneId must be provided", nameof(timeZoneId));
     }
 
-    DateTimeZone? dateTimeZone = DateTimeZoneProviders.Tzdb[timeZoneId] 
-      ?? throw new ArgumentException("Invalid TimeZoneId", nameof(timeZoneId));
-
-    var utcNow = Instant.FromDateTimeUtc(DateTime.UtcNow);
     var localNow = LocalDateTime.FromDateTime(localDateTime);
-    var offSetDateTime = new OffsetDateTime(localNow, dateTimeZone.GetUtcOffset(utcNow));
-
     return new CapturedDateTime
     {
-      Universal = Instant.FromDateTimeUtc(DateTime.UtcNow),
-      UtcOffset = offSetDateTime.Offset,
+      UtcInstant = Instant.FromDateTimeUtc(DateTime.UtcNow),
       IsDaylightSavingTime = isDst,
       TimeZoneId = timeZoneId,
-      Local = localNow
+      LocalOriginDateTime = localNow
     };
   }
 
   public static CapturedDateTime Empty => new()
   {
-    Universal = Instant.MinValue,
-    UtcOffset = Offset.Zero,
+    UtcInstant = Instant.MinValue,
     IsDaylightSavingTime = false,
     TimeZoneId = string.Empty,
-    Local = LocalDateTime.FromDateTime(DateTime.MinValue)
+    LocalOriginDateTime = LocalDateTime.FromDateTime(DateTime.MinValue)
   };
 
   public static bool IsEmpty(CapturedDateTime capturedDateTime)

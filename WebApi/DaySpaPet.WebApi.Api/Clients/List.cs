@@ -6,14 +6,13 @@ using MediatR;
 namespace DaySpaPet.WebApi.Api.Clients;
 
 /// <summary>
-/// List all Clients
+/// List Clients
 /// </summary>
 /// <remarks>
-/// List all clients - returns a ClientListResponse containing the Clients.
-/// NOTE: In DEV always returns a FAKE set of 2 clients
+/// List clients - returns a ClientListResponse containing the Clients.
 /// </remarks>
 public class List
-  : EndpointWithoutRequest<ClientListResponse>
+  : Endpoint<ClientListRequest, ClientListResponse>
 {
   private readonly IMediator _mediator;
 
@@ -24,13 +23,13 @@ public class List
 
   public override void Configure()
   {
-    Get("/Clients");
+    Get(ClientListRequest.Route);
     AllowAnonymous();
   }
 
-  public override async Task HandleAsync(CancellationToken ct)
+  public override async Task HandleAsync(ClientListRequest request, CancellationToken ct)
   {
-    var result = await _mediator.Send(new ListClientsShallowQuery(null, null), ct);
+    var result = await _mediator.Send(new ListClientsShallowQuery(request.Skip, request.Take), ct);
 
     if (result.IsSuccess)
     {

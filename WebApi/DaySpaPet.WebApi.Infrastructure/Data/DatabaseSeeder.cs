@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Runtime.Intrinsics.X86;
+﻿using System.Globalization;
 using Bogus;
 using DaySpaPet.WebApi.Core;
 using DaySpaPet.WebApi.Core.ClientAggregate;
 using DaySpaPet.WebApi.Core.PetAggregate;
 using DaySpaPet.WebApi.SharedKernel;
+using NodaTime;
 
 namespace DaySpaPet.WebApi.Infrastructure.Data;
 public sealed class DatabaseSeeder
@@ -36,7 +34,7 @@ public sealed class DatabaseSeeder
   private static IReadOnlyCollection<Client> GenerateClients(int amount)
 #pragma warning restore CA1859 // Use concrete types when possible for improved performance
   {
-    var idIterator = 0;
+    var idIterator = 1;
     var clientFaker = new Faker<Client>()
       .RuleFor(c => c.Id, f => idIterator++)
       .RuleFor(c => c.FirstName, f => f.Person.FirstName)
@@ -45,12 +43,16 @@ public sealed class DatabaseSeeder
       .RuleFor(c => c.PhoneNumber, f => f.Phone.PhoneNumber("###-##-####"))
       .RuleFor(c => c.PhoneExtension, f => f.Random.Replace("###").OrNull(f, .92f))
       .RuleFor(c => c.Status, f => ClientAccountStatus.New)
-      .RuleFor(c => c.CreatedAt, f => CapturedDateTime.CaptureFromLocalBclDateTime(DateTime.Now, true, "America/New_York"))
+      .RuleFor(c => c.CreatedAtServerInstantUtc, f => Instant.FromDateTimeUtc(DateTime.UtcNow))
+      .RuleFor(c => c.CreatedAtDaylightSavingTime, f => true)
+      .RuleFor(c => c.CreatedAtTimeZoneId, f => "America/New_York")
+      .RuleFor(c => c.CreatedAtOriginLocalDateTime, f => LocalDateTime.FromDateTime(DateTime.Now))
       .RuleFor(c => c.EmailAddress, f => f.Person.Email);
 
     var clients = Enumerable.Range(1, amount)
       .Select(i => SeedRow(clientFaker, i))
-      .ToList();
+      .ToList()
+      .AsReadOnly();
 
     return clients;
   }
@@ -71,7 +73,7 @@ public sealed class DatabaseSeeder
     var adultStatusWeights = new[] { 0.1f, 0.8f, 0.1f };
     var seniorStatusWeights = new[] { 0.05f, 0.55f, 0.4f };
 
-    var petIdIterator = 0;
+    var petIdIterator = 1;
     foreach (var client in Clients)
     {
       var countOfClientPets = random.WeightedRandom(items, weights);
@@ -79,8 +81,11 @@ public sealed class DatabaseSeeder
       {
         var birthDate = DateOnly.FromDateTime(pf.Date.Between(oldestBirthDate, youngestBirthDate));
         int age = (int)Math.Floor((int)(_dateReference - birthDate.ToDateTime(TimeOnly.MinValue)).TotalDays / 365.25m);
-        // Set CreatedAt relative to birth date (e.g. usually 2+ months after between range of 1 day after birth and 1.5 years after birth).
-        var createdAt = CapturedDateTime.CaptureFromLocalBclDateTime(birthDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Local).AddDays(pf.Random.Int(1, 547)), true, "America/New_York");
+        // Set created fields relative to birth date (e.g. usually 2+ months after between range of 1 day after birth and 1.5 years after birth).
+        var createdAtDst = true;
+        var createdAtTimeZoneId = "America/New_York";
+        var local = LocalDateTime.FromDateTime(birthDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Local).AddDays(pf.Random.Int(1, 547)));
+        
         var status = age <= 1
           ? random.WeightedRandom(petStatuses, puppyPetStatusWeights)
           : age > 8
@@ -106,7 +111,7 @@ public sealed class DatabaseSeeder
 
         OptionalNewPetData data = new(weight, age, birthDate, adoptionDate, deathDate, firstVisitDate, mostRecentVisitDate);
         var pet = new Pet(client.Id, pf.Person.FirstName, AnimalType.Dog, 
-          GetRandomBreed(pf), createdAt, data)
+          GetRandomBreed(pf), createdAtDst, createdAtTimeZoneId, local, data)
         {
           Id = petIdIterator++
         };
@@ -114,7 +119,7 @@ public sealed class DatabaseSeeder
       }
     }
 
-    return pets;
+    return pets.AsReadOnly();
   }
 
   private static string GetRandomBreed(Faker faker)

@@ -8,6 +8,7 @@ public sealed class ClientConfiguration : IEntityTypeConfiguration<Client>
 {
   public void Configure(EntityTypeBuilder<Client> builder)
   {
+    builder.HasKey(c => c.Id);
     builder.Property(c => c.FirstName)
       .HasMaxLength(DataSchemaConstants.DEFAULT_NAME_LENGTH)
       .IsRequired();
@@ -23,7 +24,16 @@ public sealed class ClientConfiguration : IEntityTypeConfiguration<Client>
           p => p.Value,
           p => ClientAccountStatus.FromValue(p))
       .IsRequired();
-    //builder.OwnsOne(p => p.CreatedAt)
-    //  .Property(p=>p.Universal) ...;
+    builder.Property(c => c.CreatedAtServerInstantUtc)
+      .IsRequired();
+    builder.Property(c => c.CreatedAtDaylightSavingTime)
+      .IsRequired();
+    builder.Property(c => c.CreatedAtTimeZoneId)
+      .IsRequired();
+    builder.Property(c => c.CreatedAtOriginLocalDateTime)
+      .IsRequired();
+    builder.HasMany(c => c.Pets)
+      .WithOne()
+      .HasForeignKey(p => p.ClientId);
   }
 }

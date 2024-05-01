@@ -9,6 +9,7 @@ public sealed class PetConfiguration : IEntityTypeConfiguration<Pet>
 {
   public void Configure(EntityTypeBuilder<Pet> builder)
   {
+    builder.HasKey(c => c.Id);
     builder.Property(p => p.ClientId)
       .IsRequired();
     builder.Property(p => p.Name)
@@ -26,6 +27,14 @@ public sealed class PetConfiguration : IEntityTypeConfiguration<Pet>
       .HasConversion(
           p => p.Value,
           p => PetStatus.FromValue(p))
+      .IsRequired();
+    builder.Property(c => c.CreatedAtServerInstantUtc)
+      .IsRequired();
+    builder.Property(c => c.CreatedAtDaylightSavingTime)
+      .IsRequired();
+    builder.Property(c => c.CreatedAtTimeZoneId)
+      .IsRequired();
+    builder.Property(c => c.CreatedAtOriginLocalDateTime)
       .IsRequired();
   }
 }

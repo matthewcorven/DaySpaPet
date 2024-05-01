@@ -6,17 +6,23 @@
 - Manually aligned to timely design guidance by [Beth Massi](https://github.com/BethMassi) and [Eilon Lipton](https://github.com/Eilon) of Microsoft with this .NET 9 templates preview on [Github](https://github.com/BethMassi/HybridSharedUI). Be sure to view each branch, which organizes operational code for seven different combinations of interactivity location (global, per page/component) and interactivity type (InteractiveServer, InteractiveAuto, InteractiveWebAssembly).
 - Manually aligned to Clean Architecture template by [ardalis](https://github.com/ardalis/CleanArchitecture) for .NET 8
   - [].NET Conf 2023: Clean Architecture with .NET 8](https://www.youtube.com/watch?v=yF9SwL0p0Y0&t=12s)
-- - Inspired by:
+- Some helpful Dockerfile bits from [ContainerNinja.CleanArchitecture](https://github.com/referbruv/ContainerNinja.CleanArchitecture/blob/master/API/Dockerfile)
+- Inspired by:
   - Nick Chapsas:  Elfocrash/clean-minimal-api
 - Fluent UI thanks to [Microsoft Fluent UI Blazor Components](https://github.com/microsoft/fluentui-blazor) 
 	- ... with thanks to [Fluent UI Web Components](https://github.com/microsoft/fluentui/tree/master/packages/web-components) 
 		- ... with thanks to [FAST Web Components](https://github.com/microsoft/fast/tree/master/packages/web-components) which is a delight to read and experiment with.
+- [Twilio: Dockerize your SQL Server and use it in ASP.NET Core with Entity Framework Core](https://www.twilio.com/en-us/blog/containerize-your-sql-server-with-docker-and-aspnet-core-with-ef-core)
+- [Twilio: Dockerize your SQL Server and use it in ASP.NET Core with Entity Framework Core](https://www.twilio.com/en-us/blog/containerize-your-sql-server-with-docker-and-aspnet-core-with-ef-core)
+- [On .NET Live: Next-level EF Core Data Seeding with Bogus](https://www.youtube.com/watch?v=KoEOsfrRUqk)
+- [Sander Ten Brinke: Taking Entity Framework Core data seeding to the next level with Bogus](https://stenbrinke.nl/blog/taking-ef-core-data-seeding-to-the-next-level-with-bogus/)
 
 ## Architecture
 
-- .NET 8 MAUI
-- .NET 8 Blazor Server + WebAssembly
-- .NET 8 Minimal API
+- Web App: 
+  - .NET 8 MAUI + WebAssembly
+- Web API: 
+  - .NET 8 Minimal API
 
 ### Clean Architecture
 
@@ -99,3 +105,11 @@ ref: https://github.com/xamarin/xamarin-android/issues/7489
 2. Entity Framework requires a default parameterless constructor, or a paramaterized constructor where its parameter names and types matches those of the mapped properties.
 
 ref: https://learn.microsoft.com/en-us/ef/core/modeling/constructors#binding-to-mapped-properties
+
+3. Currently, Entity Framework supports Value Objects (aka Complex Types) but this support excludes data seeding (EF's `ModelBuilder.HasData`).
+  - ref: https://github.com/dotnet/efcore/issues/31254
+
+4. Nuget offers Central Package Management, a feature where you can manage all your projects' Nuget packages from a single solution-level `Directory.Package.props` file. This is useful for ensuring all projects use the same versions of packages. However, this feature currently is not straightforward when a MAUI project is in-scope of the props file:
+  - 1. [dotnet/maui Issue #12953: Using central package management causes build breaking NU1009 with MAUI projects](https://github.com/dotnet/maui/issues/12953)
+      - [Closed PR #17235](https://github.com/dotnet/maui/pull/17235/files)
+        - [Fork PR file comparison](https://github.com/hypdeb/repros/compare/master...jonathanpeppers:MauiNuGetCPMRepro:peppers) 

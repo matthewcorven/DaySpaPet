@@ -2,5 +2,5 @@
 
 public interface IListClientsShallowQueryService
 {
-  Task<IEnumerable<ClientDTO>> ListAsync();
+  Task<IEnumerable<ClientDTO>> ListAsync(int? skip, int? take);
 }

@@ -1,4 +1,4 @@
-﻿using Ardalis.SharedKernel;
+﻿using DaySpaPet.WebApi.SharedKernel;
 
 namespace DaySpaPet.WebApi.Core.PetAggregate.Events;
 

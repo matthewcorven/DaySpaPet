@@ -36,6 +36,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0-Solution Items", "0-Solut
 		WebApi\Directory.Build.props = WebApi\Directory.Build.props
 		WebApi\Directory.Build.targets = WebApi\Directory.Build.targets
 		WebApi\Directory.Packages.props = WebApi\Directory.Packages.props
+		WebApi\docker-compose.yml = WebApi\docker-compose.yml
 		WebApi\Dockerfile = WebApi\Dockerfile
 	EndProjectSection
 EndProject

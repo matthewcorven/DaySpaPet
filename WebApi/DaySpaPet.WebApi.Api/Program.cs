@@ -10,11 +10,11 @@ using Serilog;
 using Serilog.Extensions.Logging;
 
 using DaySpaPet.WebApi.Core;
-using DaySpaPet.WebApi.Core.ClientAggregate;
 using DaySpaPet.WebApi.Infrastructure;
 using DaySpaPet.WebApi.Infrastructure.Data;
 using System.Globalization;
 using DaySpaPet.WebApi.UseCases;
+using Ardalis.GuardClauses;
 
 var logger = Log.Logger = new LoggerConfiguration()
   .Enrich.FromLogContext()
@@ -35,9 +35,14 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
   options.MinimumSameSitePolicy = SameSiteMode.None;
 });
 
+builder.Services.AddCoreServices(microsoftLogger);
+
+// Infrastructure
+builder.Services.AddHttpContextAccessor();
 string? connectionString = builder.Configuration.GetConnectionString("DaySpaPetDb");
-builder.Services.AddDbContext<AppDbContext>(options =>
-          options.UseSqlServer(connectionString));
+Guard.Against.NullOrEmpty(connectionString, nameof(connectionString));
+builder.Services.AddInfrastructureServices(microsoftLogger, builder.Environment.IsDevelopment(), connectionString!);
+
 
 builder.Services.AddFastEndpoints();
 //builder.Services.AddFastEndpointsApiExplorer();
@@ -54,10 +59,6 @@ builder.Services.SwaggerDocument(o =>
 //  c.IncludeXmlComments(xmlCommentFilePath);
 //  c.OperationFilter<FastEndpointsOperationFilter>();
 //});
-
-builder.Services.AddCoreServices(microsoftLogger);
-builder.Services.AddInfrastructureServices(microsoftLogger, builder.Environment.IsDevelopment());
-
 ConfigureMediatR();
 
 // add list services for diagnostic purposes - see https://github.com/ardalis/AspNetCoreStartupServices
