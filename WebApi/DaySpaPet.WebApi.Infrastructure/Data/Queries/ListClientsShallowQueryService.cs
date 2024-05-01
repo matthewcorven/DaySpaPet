@@ -14,7 +14,7 @@ public class ListClientsShallowQueryService
     _db = db;
   }
 
-  public async Task<IEnumerable<ClientDTO>> ListAsync()
+  public async Task<IEnumerable<ClientDTO>> ListAsync(int? skip, int? take)
   {
     var result = await _db.Clients.FromSqlRaw("""
 SELECT 
@@ -27,9 +27,11 @@ SELECT
   ,EmailAddress
 FROM Clients
 """) // don't fetch other big columns
+      .Skip(skip ?? 0)
+      .Take(take ?? 100)
       .Select(c => new ClientDTO(c.Id, c.FirstName, c.LastName, 
         c.PhoneCountryCode, c.PhoneNumber, c.PhoneExtension!,
-        c.EmailAddress!))
+        c.Status, c.EmailAddress!))
       .ToListAsync();
 
     return result;

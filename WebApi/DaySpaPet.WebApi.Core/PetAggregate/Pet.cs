@@ -3,6 +3,7 @@ using Ardalis.SharedKernel;
 using DaySpaPet.WebApi.SharedKernel.GuardClauses;
 using DaySpaPet.WebApi.Core.PetAggregate.Events;
 using DaySpaPet.WebApi.SharedKernel;
+using NodaTime;
 
 namespace DaySpaPet.WebApi.Core.PetAggregate;
 
@@ -11,7 +12,7 @@ public sealed record OptionalNewPetData(
   DateOnly? BirthDate, DateOnly? AdoptionDate, DateOnly? deathDate,
   DateOnly? MostRecentVisitDate, DateOnly? FirstVisitDate);
 
-public class Pet : EntityBase, IAggregateRoot
+public class Pet : EntityRootBase, IAggregateRoot
 {
   // Required
   public int ClientId { get; private set; }
@@ -19,8 +20,6 @@ public class Pet : EntityBase, IAggregateRoot
   public AnimalType Type { get; private set; }
   public string Breed { get; private set; } = default!;
   public PetStatus Status { get; private set; } = PetStatus.NotSet;
-  // Timestamps
-  public CapturedDateTime CreatedAt { get; private set; }
   // Optional
   public double? Weight { get; private set; }
   public int? Age { get; set; }
@@ -30,7 +29,7 @@ public class Pet : EntityBase, IAggregateRoot
   public DateOnly? MostRecentVisitDate { get; private set; }
   public DateOnly? FirstVisitDate { get; private set; }
   // Navigation
-  private readonly List<PetNote> _notes = new();
+  private readonly List<PetNote> _notes = [];
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
   public Pet()
@@ -40,14 +39,17 @@ public class Pet : EntityBase, IAggregateRoot
   }
 
   public Pet(int clientId, string name, AnimalType type, string breed, 
-    CapturedDateTime createdAt, OptionalNewPetData? optionalNewPetInfo = null)
+    bool createdAtDst, string createdAtTimeZoneId, LocalDateTime createdAtLocalDateTime, 
+    OptionalNewPetData? optionalNewPetInfo = null)
   {
     ClientId = Guard.Against.Negative(clientId, nameof(clientId));
     Name = Guard.Against.NullOrEmpty(name, nameof(name));
     Type = type;
     Breed = Guard.Against.NullOrEmpty(breed, nameof(breed));
     Status = PetStatus.New;
-    CreatedAt = createdAt;
+
+    this.SetCreatedAt(createdAtDst, createdAtTimeZoneId, createdAtLocalDateTime);
+
     if (optionalNewPetInfo is not null)
     {
       SetWeight(optionalNewPetInfo.Weight);

@@ -1,6 +1,8 @@
 ﻿using Ardalis.Result;
 using Ardalis.SharedKernel;
+using DaySpaPet.WebApi.Core.Interfaces;
 using DaySpaPet.WebApi.SharedKernel;
+using NodaTime;
 
 namespace DaySpaPet.WebApi.UseCases.Clients.Create;
 
@@ -14,5 +16,4 @@ namespace DaySpaPet.WebApi.UseCases.Clients.Create;
 /// <param name="phoneExtension">Optional; Defaults to null.</param>
 /// <param name="emailAddress">Required. Validated based on format and length.</param>
 public record CreateClientCommand(string firstName, string lastName, string? phoneCountryCode, 
-  string phoneNumber, string? phoneExtension, string emailAddress,
-  CapturedDateTime createdAt) : ICommand<Result<int>>;
+  string phoneNumber, string? phoneExtension, string emailAddress, OriginClock originClock) : ICommand<Result<int>>;
