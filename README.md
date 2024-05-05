@@ -65,7 +65,8 @@ This iteration is no more likely to continue than the others, but it occurred to
   - **Bogus** for realistic, deterministic, maintainable, and LARGE dev dataset.
   - **Fluent UI Blazor Components** for consistent, accessible, and responsive UI.
   - **Hangfire** for background work (serving fire-and-forget use cases as well as scheduling).
-  - **MediatR** for CQRS and Mediator patterns.
+  - **MediatR** for CQRS and Mediator patterns (in-process).
+  - **MassTransit + RabbitMq** for messaging, sagas (out-of-process).
   - **Serilog** for structured logging.
   - **Swashbuckle** for OpenAPI/Swagger documentation.
   - **Twilio** for email & SMS notifications.

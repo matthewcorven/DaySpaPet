@@ -39,7 +39,7 @@ public class UpdateClientValidator : Validator<UpdateClientRequest>
       .When(x => !string.IsNullOrWhiteSpace(x.EmailAddress))
       .WithMessage("Email Address is not valid.");
     RuleFor(x => x.ClientId)
-      .Must((args, contributorId) => args.Id == contributorId)
+      .Must((args, clientId) => args.Id == clientId)
       .WithMessage("Route and body Ids must match; cannot update Id of an existing resource.");
   }
 }

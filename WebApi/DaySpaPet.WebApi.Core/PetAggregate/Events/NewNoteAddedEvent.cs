@@ -2,8 +2,13 @@
 
 namespace DaySpaPet.WebApi.Core.PetAggregate.Events;
 
-public class NewNoteAddedEvent(Pet pet, PetNote newNote) : DomainEventBase
+public class NewNoteAddedEvent : DomainEventBase
 {
-  public PetNote AddedPetNote { get; set; } = newNote;
-  public Pet Pet { get; set; } = pet;
+  public NewNoteAddedEvent(Pet pet, PetNote newNote, OriginClock originClock) : base(originClock)
+  {
+    Pet = pet;
+    AddedPetNote = newNote;
+  }
+  public PetNote AddedPetNote { get; private set; }
+  public Pet Pet { get; private set; }
 }

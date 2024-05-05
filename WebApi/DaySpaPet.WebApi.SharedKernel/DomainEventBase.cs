@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using NodaTime;
 
 namespace DaySpaPet.WebApi.SharedKernel;
 
@@ -8,5 +9,12 @@ namespace DaySpaPet.WebApi.SharedKernel;
 /// </summary>
 public abstract class DomainEventBase : INotification
 {
-  public DateTime DateOccurred { get; protected set; } = DateTime.UtcNow;
+  public Instant OccurredAtInstant { get; init; }
+  public OriginClock OriginClock { get; init; }
+
+  protected DomainEventBase(OriginClock originClock)
+  {
+    OccurredAtInstant = Instant.FromDateTimeUtc(DateTime.UtcNow);
+    OriginClock = originClock;
+  }
 }

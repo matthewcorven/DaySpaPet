@@ -2,7 +2,6 @@
 using DaySpaPet.WebApi.SharedKernel.GuardClauses;
 using DaySpaPet.WebApi.Core.PetAggregate.Events;
 using DaySpaPet.WebApi.SharedKernel;
-using NodaTime;
 
 namespace DaySpaPet.WebApi.Core.PetAggregate;
 
@@ -11,7 +10,7 @@ public sealed record OptionalNewPetData(
   DateOnly? BirthDate, DateOnly? AdoptionDate, DateOnly? deathDate,
   DateOnly? MostRecentVisitDate, DateOnly? FirstVisitDate);
 
-public class Pet : SharedKernel.EntityBase, IAggregateRoot
+public class Pet : EntityBase, IAggregateRoot
 {
   // Required
   public int ClientId { get; private set; }
@@ -156,12 +155,12 @@ public class Pet : SharedKernel.EntityBase, IAggregateRoot
     }
   }
 
-  public void AddNote(PetNote newNote)
+  public void AddNote(PetNote newNote, OriginClock originClock)
   {
     Guard.Against.Null(newNote, nameof(newNote));
     _notes.Add(newNote);
 
-    var newNoteAddedEvent = new NewNoteAddedEvent(this, newNote);
+    var newNoteAddedEvent = new NewNoteAddedEvent(this, newNote, originClock);
     base.RegisterDomainEvent(newNoteAddedEvent);
   }
 

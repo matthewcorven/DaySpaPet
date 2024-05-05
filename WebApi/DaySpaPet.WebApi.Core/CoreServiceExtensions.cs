@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using DaySpaPet.WebApi.Core.Interfaces;
+using DaySpaPet.WebApi.Core.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace DaySpaPet.WebApi.Core;
@@ -7,7 +9,7 @@ public static class CoreServiceExtensions
   public static IServiceCollection AddCoreServices(this IServiceCollection services, ILogger logger)
   {
     //services.AddScoped<IToDoItemSearchService, ToDoItemSearchService>();
-    //services.AddScoped<IDeleteContributorService, DeleteContributorService>();
+    services.AddScoped<IDeactivateClientService, DeactivateClientService>();
     
     logger.LogInformation("{Project} services registered", "Core");
 

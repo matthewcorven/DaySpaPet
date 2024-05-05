@@ -51,7 +51,7 @@ public static class InfrastructureServiceExtensions
   private static void RegisterDevelopmentOnlyDependencies(IServiceCollection services)
   {
     //services.AddScoped<IEmailSender, SmtpEmailSender>();
-    //services.AddScoped<IListContributorsQueryService, FakeListContributorsQueryService>();
+    //services.AddScoped<IListClientsQueryService, FakeListClientsQueryService>();
     //services.AddScoped<IListIncompleteItemsQueryService, FakeListIncompleteItemsQueryService>();
     services.AddScoped<IListClientsShallowQueryService, ListClientsShallowQueryService>();
   }
@@ -59,15 +59,16 @@ public static class InfrastructureServiceExtensions
   private static void RegisterProductionOnlyDependencies(IServiceCollection services)
   {
     //services.AddScoped<IEmailSender, SmtpEmailSender>();
-    //services.AddScoped<IListContributorsQueryService, ListContributorsQueryService>();
+    //services.AddScoped<IListClientsQueryService, ListClientsQueryService>();
     //services.AddScoped<IListIncompleteItemsQueryService, ListIncompleteItemsQueryService>();
     services.AddScoped<IListClientsShallowQueryService, ListClientsShallowQueryService>();
   }
 
   private static void RegisterEF(IServiceCollection services, string connectionString)
   {
-    services.AddDbContext<AppDbContext>(options =>
-          options.UseSqlServer(connectionString, o => o.UseNodaTime()));
+    services.AddDbContext<AppDbContext>(
+    (sp, options) => options
+        .UseSqlServer(connectionString, o => o.UseNodaTime()));
 
     services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
     services.AddScoped(typeof(IReadRepository<>), typeof(EfRepository<>));

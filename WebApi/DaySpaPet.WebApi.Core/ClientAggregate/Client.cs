@@ -3,7 +3,6 @@ using DaySpaPet.WebApi.Core.ClientAggregate.Events;
 using DaySpaPet.WebApi.Core.PetAggregate;
 using DaySpaPet.WebApi.SharedKernel;
 using DaySpaPet.WebApi.SharedKernel.GuardClauses;
-using NodaTime;
 
 namespace DaySpaPet.WebApi.Core.ClientAggregate;
 
@@ -48,14 +47,14 @@ public class Client : EntityBase, IAggregateRoot
     this.SetCreatedAt(originClock);
   }
 
-  public void UpdateName(string newFirstName, string newLastName)
+  public void UpdateName(string newFirstName, string newLastName, OriginClock originClock)
   {
     var oldFirstName = FirstName;
     var oldLastName = LastName;
     FirstName = Guard.Against.NullOrEmpty(newFirstName, nameof(newFirstName)).Trim();
     LastName = Guard.Against.NullOrEmpty(newLastName, nameof(newLastName)).Trim();
 
-    var domainEvent = new ClientNameUpdatedEvent(this, newFirstName, newLastName, oldFirstName, oldLastName);
+    var domainEvent = new ClientNameUpdatedEvent(this, newFirstName, newLastName, oldFirstName, oldLastName, originClock);
     base.RegisterDomainEvent(domainEvent);
   }
 
@@ -66,14 +65,14 @@ public class Client : EntityBase, IAggregateRoot
     PhoneExtension = phoneExtension ?? null;
   }
 
-  public void UpdateEmailAddress(string newEmailAddress)
+  public void UpdateEmailAddress(string newEmailAddress, OriginClock originClock)
   {
     Guard.Against.NullOrEmpty(newEmailAddress, nameof(newEmailAddress));
     string? oldEmailAddress = EmailAddress;
 
     EmailAddress = Guard.Against.EmailInvalid(newEmailAddress.Trim());
 
-    var domainEvent = new ClientEmailAddressUpdatedEvent(this, newEmailAddress, oldEmailAddress);
+    var domainEvent = new ClientEmailAddressUpdatedEvent(this, newEmailAddress, oldEmailAddress, originClock);
     base.RegisterDomainEvent(domainEvent);
   }
 

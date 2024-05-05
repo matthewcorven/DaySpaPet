@@ -2,9 +2,9 @@
 
 public class UpdateClientResponse
 {
-  public UpdateClientResponse(ClientRecord contributor)
+  public UpdateClientResponse(ClientRecord client)
   {
-    Client = contributor;
+    Client = client;
   }
   public ClientRecord Client { get; set; }
 }
