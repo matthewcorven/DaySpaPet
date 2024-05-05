@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DaySpaPet.WebApi.SharedKernel\DaySpaPet.WebApi.SharedKernel.csproj" />
     <ProjectReference Include="..\DaySpaPet.WebApi.Infrastructure\DaySpaPet.WebApi.Infrastructure.csproj" />
     <ProjectReference Include="..\DaySpaPet.WebApi.UseCases\DaySpaPet.WebApi.UseCases.csproj" />
   </ItemGroup>

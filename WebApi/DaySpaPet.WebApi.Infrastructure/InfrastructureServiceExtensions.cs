@@ -1,5 +1,4 @@
-﻿using Ardalis.SharedKernel;
-using DaySpaPet.WebApi.Core.Interfaces;
+﻿using DaySpaPet.WebApi.Core.Interfaces;
 using DaySpaPet.WebApi.Infrastructure.CoreImplementations;
 using DaySpaPet.WebApi.Infrastructure.Data;
 using DaySpaPet.WebApi.Infrastructure.Data.Queries;
@@ -9,33 +8,29 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NodaTime;
+using DaySpaPet.WebApi.SharedKernel;
 
 namespace DaySpaPet.WebApi.Infrastructure;
+
+
+
 public static class InfrastructureServiceExtensions
 {
+
+
+
   public static IServiceCollection AddInfrastructureServices(
     this IServiceCollection services,
     ILogger logger,
     bool isDevelopment,
     string connectionString)
   {
-    // Guard, at app startup
-    ServiceDescriptor? httpContextAccessorServiceDescriptor = services.FirstOrDefault(x => x.ServiceType == typeof(IHttpContextAccessor));
-    {
-      // ... against inaccessible IHttpContextAccessor
-      if (httpContextAccessorServiceDescriptor == null)
-      {
-        throw new InvalidOperationException($"Unable to resolve service for type {typeof(IHttpContextAccessor)} has not been registered in the service collection. Verify that AddHttpContextAccessor() is called before AddInfrastructureServices().");
-      }
-      // ... against non-Scoped IHttpContextAccessor
-      if (httpContextAccessorServiceDescriptor.Lifetime != ServiceLifetime.Scoped)
-      {
-        throw new InvalidOperationException($"The service for type {typeof(IHttpContextAccessor)} must be registered as Scoped. Verify that AddHttpContextAccessor() is called with the correct lifetime before AddInfrastructureServices().");
-      }
-    }
+    // Ensure DI dependencies of this layer are registered, and with the correct lifetime
+    services.AssertImplementationIsRegisteredAs<IHttpContextAccessor>(ServiceLifetime.Singleton);
 
     services.AddSingleton<IClock, DaySpaPetClock>();
-    services.AddScoped<IRequestOriginContextProvider, RequestOriginContextProvider>();
+    services.AddSingleton<IGlobalizationService, DaySpaPetGlobalizationService>();
+    services.AddSingleton<IRequestOriginContextProvider, RequestOriginContextProvider>();
 
     if (isDevelopment)
     {

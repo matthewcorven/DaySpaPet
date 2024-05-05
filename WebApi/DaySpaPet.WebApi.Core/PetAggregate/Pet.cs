@@ -1,5 +1,4 @@
 ﻿using Ardalis.GuardClauses;
-using Ardalis.SharedKernel;
 using DaySpaPet.WebApi.SharedKernel.GuardClauses;
 using DaySpaPet.WebApi.Core.PetAggregate.Events;
 using DaySpaPet.WebApi.SharedKernel;
@@ -12,7 +11,7 @@ public sealed record OptionalNewPetData(
   DateOnly? BirthDate, DateOnly? AdoptionDate, DateOnly? deathDate,
   DateOnly? MostRecentVisitDate, DateOnly? FirstVisitDate);
 
-public class Pet : EntityRootBase, IAggregateRoot
+public class Pet : SharedKernel.EntityBase, IAggregateRoot
 {
   // Required
   public int ClientId { get; private set; }
@@ -39,7 +38,7 @@ public class Pet : EntityRootBase, IAggregateRoot
   }
 
   public Pet(int clientId, string name, AnimalType type, string breed, 
-    bool createdAtDst, string createdAtTimeZoneId, LocalDateTime createdAtLocalDateTime, 
+    OriginClock originClock, 
     OptionalNewPetData? optionalNewPetInfo = null)
   {
     ClientId = Guard.Against.Negative(clientId, nameof(clientId));
@@ -48,7 +47,7 @@ public class Pet : EntityRootBase, IAggregateRoot
     Breed = Guard.Against.NullOrEmpty(breed, nameof(breed));
     Status = PetStatus.New;
 
-    this.SetCreatedAt(createdAtDst, createdAtTimeZoneId, createdAtLocalDateTime);
+    this.SetCreatedAt(originClock);
 
     if (optionalNewPetInfo is not null)
     {

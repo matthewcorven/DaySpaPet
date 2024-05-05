@@ -2,6 +2,7 @@
 using Ardalis.GuardClauses;
 using DaySpaPet.WebApi.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
+using DaySpaPet.WebApi.SharedKernel;
 
 namespace DaySpaPet.WebApi.Infrastructure.CoreImplementations;
 
@@ -25,10 +26,10 @@ public sealed class RequestOriginContextProvider : IRequestOriginContextProvider
   {
     var requestHeaders = _httpContextAccessor.HttpContext.Request.Headers;
     
-    requestHeaders.TryGetValue("X-Origin-Clock-TimeZoneId", out var timeZoneIdStringValues);
-    Guard.Against.Null(timeZoneIdStringValues, "HTTP request header \"X-Origin-Clock-TimeZoneId\" is required.");
+    requestHeaders.TryGetValue("X-Origin-TimeZoneId", out var timeZoneIdStringValues);
+    Guard.Against.Null(timeZoneIdStringValues, "HTTP request header \"X-Origin-TimeZoneId\" is required.");
     string? timeZoneIdValue = timeZoneIdStringValues.FirstOrDefault();
-    Guard.Against.NullOrWhiteSpace(timeZoneIdValue, $"HTTP request header \"X-Origin-Clock-TimeZoneId\" value \"{timeZoneIdValue}\" is not understood to understand a string.");
+    Guard.Against.NullOrWhiteSpace(timeZoneIdValue, $"HTTP request header \"X-Origin-TimeZoneId\" value \"{timeZoneIdValue}\" is not understood to understand a string.");
 
     // Get the current UTC time
     Instant now = _clock.GetCurrentInstant();        
@@ -39,11 +40,11 @@ public sealed class RequestOriginContextProvider : IRequestOriginContextProvider
     }
 
     // Get the ZonedDateTime in the specified zone
-    ZonedDateTime zonedDateTime = now.InZone(zone!);
+    var zonedDateTime = now.InZone(zone!);
 
     // Convert to LocalDateTime
-    LocalDateTime originLocalDateTime = zonedDateTime.LocalDateTime;
-    bool isDst = zonedDateTime.IsDaylightSavingTime();
+    var originLocalDateTime = zonedDateTime.LocalDateTime;
+    var isDst = zonedDateTime.IsDaylightSavingTime();
 
     return new OriginClock(originLocalDateTime, timeZoneIdValue, isDst);
   }

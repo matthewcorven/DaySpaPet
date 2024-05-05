@@ -9,7 +9,7 @@ namespace DaySpaPet.WebApi.SharedKernel;
 /// If you prefer GUID Ids, change it here.
 /// If you need to support both GUID and int IDs, change to EntityBase&lt;TId&gt; and use TId as the type for Id.
 /// </summary>
-public abstract class EntityRootBase : HasDomainEventsBase
+public abstract class EntityBase : HasDomainEventsBase
 {
   public int Id { get; set; }
   public Instant CreatedAtServerInstantUtc { get; internal set; } // SQL Server datetimeoffset, PostgreSQL "timestamp with time zone", where "with time zone" actually meants "in UTC"
@@ -18,40 +18,40 @@ public abstract class EntityRootBase : HasDomainEventsBase
   public string CreatedAtTimeZoneId { get; internal set; } = default!; // SQL Server nvarchar(100), PostgreSQL text
   public LocalDateTime CreatedAtOriginLocalDateTime { get; internal set; } // SQL Server datetime2, PostgreSQL "timestamp without time zone"
   
-  public void SetCreatedAt(bool isDst, string timeZoneId, LocalDateTime originLocalDateTime)
+  public void SetCreatedAt(OriginClock originClock)
   {
     CreatedAtServerInstantUtc = Instant.FromDateTimeUtc(DateTime.UtcNow);
-    CreatedAtDaylightSavingTime = isDst;
+    CreatedAtDaylightSavingTime = originClock.IsDaylightSavingsTime;
     // TODO: Validate timeZoneId is one of known static values
-    CreatedAtTimeZoneId = Guard.Against.NullOrEmpty(timeZoneId, nameof(timeZoneId));
-    CreatedAtOriginLocalDateTime = originLocalDateTime;
+    CreatedAtTimeZoneId = Guard.Against.NullOrEmpty(originClock.TimeZoneId, nameof(originClock));
+    CreatedAtOriginLocalDateTime = originClock.LocalDateTime;
   }
 }
 
-public abstract class EntityRootBase<TId> : HasDomainEventsBase
+public abstract class EntityBase<TId> : HasDomainEventsBase
   where TId : struct, IEquatable<TId>
 {
   public TId Id { get; set; }
 }
 
-public static class EntityRootBaseExtensions
+public static class EntityBaseExtensions
 {
-  public static bool IsNew(this EntityRootBase entity)
+  public static bool IsNew(this EntityBase entity)
   {
     return entity.Id == default;
   }
 
-  public static bool IsNew<TId>(this EntityRootBase<TId> entity)
+  public static bool IsNew<TId>(this EntityBase<TId> entity)
     where TId : struct, IEquatable<TId>
   {
     return entity.Id.Equals(default);
   }
 
-  public static void SetCreatedAt(this EntityRootBase entity, bool isDst, string timeZoneId, LocalDateTime originLocalDateTime)
+  public static void SetCreatedAt(this EntityBase entity, OriginClock originClock)
   {
     entity.CreatedAtServerInstantUtc = Instant.FromDateTimeUtc(DateTime.UtcNow);
-    entity.CreatedAtDaylightSavingTime = isDst;
-    entity.CreatedAtTimeZoneId = Guard.Against.NullOrEmpty(timeZoneId, nameof(timeZoneId));
-    entity.CreatedAtOriginLocalDateTime = originLocalDateTime;
+    entity.CreatedAtDaylightSavingTime = originClock.IsDaylightSavingsTime;
+    entity.CreatedAtTimeZoneId = Guard.Against.NullOrEmpty(originClock.TimeZoneId, nameof(originClock.TimeZoneId));
+    entity.CreatedAtOriginLocalDateTime = originClock.LocalDateTime;
   }
 }

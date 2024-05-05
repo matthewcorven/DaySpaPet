@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
-using Ardalis.SharedKernel;
 using DaySpaPet.WebApi.Core.ClientAggregate;
 using DaySpaPet.WebApi.Core.PetAggregate;
+using DaySpaPet.WebApi.SharedKernel;
 using Microsoft.EntityFrameworkCore;
 
 namespace DaySpaPet.WebApi.Infrastructure.Data;
@@ -22,12 +22,12 @@ public partial class AppDbContext : DbContext
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
+    base.OnModelCreating(modelBuilder);
     modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-    
+
 #if DEBUG
     SetupSeedData(modelBuilder);
 #endif
-    base.OnModelCreating(modelBuilder);
   }
 
   private static void SetupSeedData(ModelBuilder modelBuilder)
@@ -41,6 +41,10 @@ public partial class AppDbContext : DbContext
 
   public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
   {
+    var before = ChangeTracker.Entries<EntityBase>()
+        .Select(e => e.Entity)
+        .Where(e => e.DomainEvents.Any())
+        .ToArray();
     int result = await base.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
     // ignore events if no dispatcher provided
@@ -52,6 +56,7 @@ public partial class AppDbContext : DbContext
         .Where(e => e.DomainEvents.Any())
         .ToArray();
 
+    Console.WriteLine($"Emitting ({entitiesWithEvents.Count()}) domain events");
     await _dispatcher.DispatchAndClearEvents(entitiesWithEvents);
 
     return result;

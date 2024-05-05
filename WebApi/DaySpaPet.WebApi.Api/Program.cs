@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using Ardalis.ListStartupServices;
-using Ardalis.SharedKernel;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using FastEndpoints.ApiExplorer;
@@ -15,6 +14,8 @@ using DaySpaPet.WebApi.Infrastructure.Data;
 using System.Globalization;
 using DaySpaPet.WebApi.UseCases;
 using Ardalis.GuardClauses;
+using DaySpaPet.WebApi.Core.Interfaces;
+using DaySpaPet.WebApi.SharedKernel;
 
 var logger = Log.Logger = new LoggerConfiguration()
   .Enrich.FromLogContext()
@@ -36,7 +37,6 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
 });
 
 builder.Services.AddCoreServices(microsoftLogger);
-
 // Infrastructure
 builder.Services.AddHttpContextAccessor();
 string? connectionString = builder.Configuration.GetConnectionString("DaySpaPetDb");
@@ -49,6 +49,7 @@ builder.Services.AddFastEndpoints();
 builder.Services.SwaggerDocument(o =>
 {
   o.ShortSchemaNames = true;
+  o.DocumentSettings = s => s.OperationProcessors.Add(new AddRequestOriginClockTimeZoneId());
 });
 
 //builder.Services.AddSwaggerGen(c =>

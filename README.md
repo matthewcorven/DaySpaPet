@@ -80,17 +80,17 @@ This iteration is no more likely to continue than the others, but it occurred to
 block-beta
 	columns 4
 	
-	presentation["<strong>Presentation</strong><br>Pages/Views, Endpoints (Controllers, Gateways)<br>ViewModels, API Models, Filters,<br>Model Binders, Tag Helpers<br><br><strong>Composition Root</strong><br><br><em>Other Services, Inversion Dependency Interfaces</em>"]
-	infra["<strong>Infrastructure</strong><br>Repositories, DbContexts, API Clients<br>File System Accessors, Cloud Storage Accessors,<br>Email Implem., SMS Implem., System Clock,<br><br><em>Other Services, Inversion Dependency Interfaces</em>"]
-	right1<[" "]>(right)
-	db[("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DB  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")]
+	presentation["<span style='font-size: 1.6em'><strong>Presentation</strong></span><br>Pages/Views,<br>Endpoints / Controllers<br>ViewModels, API Models, Filters,<br>Model Binders, Tag Helpers<br><br><span style='font-size: 1.6em'><strong>Composition Root</strong></span><br><br><em>Other Services,<br>Inversion Dependency Interfaces</em>"]
+	infra["<span style='font-size: 1.6em'><strong>Infrastructure</strong></span><br>Repositories, DbContexts, API Clients<br>File System Accessors,<br>Cloud Storage Accessors,<br>Email Implem., SMS Implem.,<br>System Clock,<br><br><em> Other Services,<br>Inversion Dependency Interfaces</em>"]
+	right1<["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"]>(right)
+	db[("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='font-size: 1.6em'> DB </span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")]
 
-	down2<[" "]>(down) down3<[" "]>(down) space space
+	down2<["&nbsp;"]>(down) down3<["&nbsp;"]>(down) space space
 
 	block:core:2
 	  columns 1
-	  usecases["<strong>Use Cases (Application Business Rules)</strong><br>CQRS Commands & Handlers,<br>Queries & Handlers,<br>DTOs, Behaviors "]
-	  domain["<strong>Domain (Enterprise Business Rules)</strong><br>Entities & Aggregates, Value Objects,<br>Domain Events + Handlers, Specifications"]
+	  usecases["<span style='font-size: 1.6em'><strong>Use Cases (Application Business Rules)</strong></span><br>CQRS Commands & Handlers,<br>Queries & Handlers,<br>DTOs, Behaviors "]
+	  domain["<span style='font-size: 1.6em; color: initial;'><strong>Domain (Enterprise Business Rules)</strong></span><br>Entities & Aggregates, Value Objects,<br>Domain Events + Handlers, Specifications"]
 	end
 
 	style presentation fill:#4330b8,stroke:#392892,stroke-width:3px

@@ -1,5 +1,5 @@
 ﻿using Ardalis.Specification.EntityFrameworkCore;
-using Ardalis.SharedKernel;
+using DaySpaPet.WebApi.SharedKernel;
 
 namespace DaySpaPet.WebApi.Infrastructure.Data;
 

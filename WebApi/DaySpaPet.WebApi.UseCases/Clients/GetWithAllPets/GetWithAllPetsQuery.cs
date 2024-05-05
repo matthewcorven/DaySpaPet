@@ -1,5 +1,5 @@
 ﻿using Ardalis.Result;
-using Ardalis.SharedKernel;
+using DaySpaPet.WebApi.SharedKernel;
 
 namespace DaySpaPet.WebApi.UseCases.Clients.GetWithAllPets;
 

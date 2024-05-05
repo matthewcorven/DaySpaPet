@@ -1,5 +1,4 @@
-﻿using Azure;
-using DaySpaPet.WebApi.UseCases.Clients.ListShallow;
+﻿using DaySpaPet.WebApi.UseCases.Clients.ListShallow;
 using FastEndpoints;
 using MediatR;
 
@@ -37,7 +36,7 @@ public class List
       {
         Clients = result.Value.Select(c => new ClientRecord(c.Id, c.FirstName, c.LastName,
         c.PhoneCountryCode, c.PhoneNumber, c.PhoneExtension!,
-        c.EmailAddress!)).ToList().AsReadOnly()
+        c.Status, c.EmailAddress!)).ToList().AsReadOnly()
       };
     }
   }

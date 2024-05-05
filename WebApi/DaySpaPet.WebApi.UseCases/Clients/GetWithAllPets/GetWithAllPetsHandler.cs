@@ -1,5 +1,5 @@
 ﻿using Ardalis.Result;
-using Ardalis.SharedKernel;
+using DaySpaPet.WebApi.SharedKernel;
 using DaySpaPet.WebApi.Core.ClientAggregate;
 using DaySpaPet.WebApi.UseCases.Pets;
 
@@ -29,7 +29,7 @@ public sealed class GetWithAllPetsHandler
             new PetDTO(p.Id, p.ClientId, p.Name, p.Type, p.Breed,
               p.Weight, p.Status, p.Age, p.BirthDate, p.AdoptionDate, p.DeathDate,
               p.MostRecentVisitDate, p.FirstVisitDate, p.Notes.Select(pn => 
-                new PetNoteDTO(pn.Id, pn.PetId, pn.Text, pn.CreatedAt, pn.IsAlert)).ToList())).ToList().AsReadOnly());
+                new PetNoteDTO(pn.Id, pn.PetId, pn.Text, pn.IsAlert)).ToList())).ToList().AsReadOnly());
         return Result<ClientWithPetsDTO>.Success(clientWithPets);
     }
 }

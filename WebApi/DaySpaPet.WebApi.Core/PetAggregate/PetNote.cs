@@ -1,6 +1,6 @@
 ﻿using Ardalis.GuardClauses;
-using Ardalis.SharedKernel;
 using DaySpaPet.WebApi.SharedKernel;
+using EntityBase = DaySpaPet.WebApi.SharedKernel.EntityBase;
 
 namespace DaySpaPet.WebApi.Core.PetAggregate;
 
@@ -13,16 +13,16 @@ public class PetNote : EntityBase
     // Required for EF
   }
 
-  public PetNote(int petId, string text, CapturedDateTime date, bool isAlert)
+  public PetNote(int petId, string text, bool isAlert, OriginClock originClock)
   {
     PetId = Guard.Against.Negative(petId, nameof(petId));
     Text = Guard.Against.NullOrEmpty(text, nameof(text));
-    CreatedAt = date;
     IsAlert = isAlert;
+    
+    this.SetCreatedAt(originClock);
   }
 
   public int PetId { get; private set; }
   public string Text { get; private set; }
-  public CapturedDateTime CreatedAt { get; private set; }
   public bool IsAlert { get; private set; }
 }

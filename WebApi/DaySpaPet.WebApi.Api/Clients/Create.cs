@@ -35,7 +35,12 @@ public class Create : Endpoint<CreateClientRequest, CreateClientResponse>
         // of faker used by database seeder, yet using its own seed local to this
         // line of code, thus ensuring future generated values are deterministic
         // so that they only change when properties are added/removed/changed.
-        FirstName = "Client Name"
+        FirstName = "Frank",
+        LastName = "Zappa",
+        PhoneCountryCode = "+1",
+        PhoneNumber = "555-555-5555",
+        PhoneExtension = "123",
+        EmailAddress = "frank@thezap.com"
       };
     });
   }

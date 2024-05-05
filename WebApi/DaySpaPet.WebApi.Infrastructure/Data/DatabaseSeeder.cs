@@ -86,6 +86,8 @@ public sealed class DatabaseSeeder
         var createdAtTimeZoneId = "America/New_York";
         var local = LocalDateTime.FromDateTime(birthDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Local).AddDays(pf.Random.Int(1, 547)));
         
+        var originClock = new OriginClock(local, createdAtTimeZoneId, createdAtDst);
+
         var status = age <= 1
           ? random.WeightedRandom(petStatuses, puppyPetStatusWeights)
           : age > 8
@@ -111,7 +113,7 @@ public sealed class DatabaseSeeder
 
         OptionalNewPetData data = new(weight, age, birthDate, adoptionDate, deathDate, firstVisitDate, mostRecentVisitDate);
         var pet = new Pet(client.Id, pf.Person.FirstName, AnimalType.Dog, 
-          GetRandomBreed(pf), createdAtDst, createdAtTimeZoneId, local, data)
+          GetRandomBreed(pf), originClock, data)
         {
           Id = petIdIterator++
         };
