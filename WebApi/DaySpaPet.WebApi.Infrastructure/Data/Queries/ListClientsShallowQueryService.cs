@@ -28,13 +28,14 @@ SELECT
   ,EmailAddress
 FROM Clients
 """) // don't fetch other big columns
-      .Skip(skip ?? 0)
-      .Take(take ?? 100)
-      .Select(c => new ClientDTO(
-        c.Id, c.FirstName, c.LastName, 
-        c.PhoneCountryCode, c.PhoneNumber, c.PhoneExtension!,
-        c.Status, c.EmailAddress!))
-      .ToListAsync();
+    .OrderBy(_ => _.Id)
+    .Skip(skip ?? 0)
+    .Take(take ?? 100)
+    .Select(c => new ClientDTO(
+      c.Id, c.FirstName, c.LastName, 
+      c.PhoneCountryCode, c.PhoneNumber, c.PhoneExtension!,
+      c.Status, c.EmailAddress!))
+    .ToListAsync();
 
     return result;
   }

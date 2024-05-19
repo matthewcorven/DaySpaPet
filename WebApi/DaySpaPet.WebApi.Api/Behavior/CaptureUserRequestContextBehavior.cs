@@ -12,9 +12,9 @@ public class CaptureUserRequestContextBehavior<TRequest, TResponse>
 {
 
   private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IClock _clock;
-    private readonly IGlobalizationService _globalizationService;
-    private readonly AppUserRequestContext _appUserRequestContext;
+  private readonly IClock _clock;
+  private readonly IGlobalizationService _globalizationService;
+  private readonly AppUserRequestContext _appUserRequestContext;
 
   public CaptureUserRequestContextBehavior(IHttpContextAccessor httpContextAccessor,
     IClock clock,
@@ -22,9 +22,9 @@ public class CaptureUserRequestContextBehavior<TRequest, TResponse>
       AppUserRequestContext appUserRequestContext)
   {
     _httpContextAccessor = httpContextAccessor;
-        _clock = clock;
-        _globalizationService = globalizationService;
-        _appUserRequestContext = appUserRequestContext;
+      _clock = clock;
+    _globalizationService = globalizationService;
+    _appUserRequestContext = appUserRequestContext;
   }
 
   public Task<TResponse> Handle(TRequest request,

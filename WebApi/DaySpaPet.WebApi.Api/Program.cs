@@ -25,7 +25,7 @@ logger.Information("Starting web host");
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseSerilog((_, config) => config.ReadFrom.Configuration(builder.Configuration));
+builder.Host.UseSerilog((context, config) => config.ReadFrom.Configuration(context.Configuration));
 using var loggerFactory = new SerilogLoggerFactory(logger);
 var microsoftLogger = loggerFactory.CreateLogger<Program>();
 
@@ -84,6 +84,10 @@ else
   app.UseDefaultExceptionHandler(); // from FastEndpoints
   app.UseHsts();
 }
+
+//Add support to logging request with SERILOG
+app.UseSerilogRequestLogging();
+
 app.UseFastEndpoints();
 app.UseSwaggerGen(); // FastEndpoints middleware
 
