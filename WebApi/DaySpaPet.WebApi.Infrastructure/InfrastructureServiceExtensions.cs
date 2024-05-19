@@ -16,9 +16,6 @@ namespace DaySpaPet.WebApi.Infrastructure;
 
 public static class InfrastructureServiceExtensions
 {
-
-
-
   public static IServiceCollection AddInfrastructureServices(
     this IServiceCollection services,
     ILogger logger,
@@ -30,7 +27,6 @@ public static class InfrastructureServiceExtensions
 
     services.AddSingleton<IClock, DaySpaPetClock>();
     services.AddSingleton<IGlobalizationService, DaySpaPetGlobalizationService>();
-    services.AddSingleton<IRequestOriginContextProvider, RequestOriginContextProvider>();
 
     if (isDevelopment)
     {
@@ -43,7 +39,7 @@ public static class InfrastructureServiceExtensions
 
     RegisterEF(services, connectionString);
 
-    logger.LogInformation("{Project} services registered", "Infrastructure");
+    logger.LogInformation("{Project} services registered", nameof(DaySpaPet.WebApi.Infrastructure));
 
     return services;
   }

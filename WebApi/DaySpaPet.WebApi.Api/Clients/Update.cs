@@ -19,11 +19,16 @@ public class Update : Endpoint<UpdateClientRequest, UpdateClientResponse>
 {
   private readonly IRepository<Client> _repository;
   private readonly IMediator _mediator;
+  private readonly AppUserRequestContext _appUserRequestContext;
 
-  public Update(IRepository<Client> repository, IMediator mediator)
+  public Update(
+    IRepository<Client> repository, 
+    IMediator mediator, 
+    AppUserRequestContext appUserRequestContext)
   {
     _repository = repository;
     _mediator = mediator;
+    _appUserRequestContext = appUserRequestContext;
   }
 
   public override void Configure()
@@ -57,12 +62,11 @@ public class Update : Endpoint<UpdateClientRequest, UpdateClientResponse>
     UpdateClientRequest request,
     CancellationToken cancellationToken)
   {
-    IRequestOriginContextProvider rocP = Resolve<IRequestOriginContextProvider>();
     var result = await _mediator.Send(new UpdateClientCommand(
       request.ClientId, 
       request.FirstName!, request.LastName!,
       request.PhoneCountryCode!, request.PhoneNumber!, request.PhoneExtension!,
-      request.Status!, request.EmailAddress!, rocP.GetOriginClock()));
+      request.Status!, request.EmailAddress!, _appUserRequestContext.ClockSnapshot));
 
     if (result.Status == ResultStatus.NotFound)
     {

@@ -1,21 +1,20 @@
-﻿using System.Reflection;
+﻿using Ardalis.GuardClauses;
 using Ardalis.ListStartupServices;
-using FastEndpoints;
-using FastEndpoints.Swagger;
-using FastEndpoints.ApiExplorer;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using FastEndpoints;
+using FastEndpoints.Swagger;
 using Serilog;
 using Serilog.Extensions.Logging;
+using System.Globalization;
+using System.Reflection;
 
 using DaySpaPet.WebApi.Core;
 using DaySpaPet.WebApi.Infrastructure;
 using DaySpaPet.WebApi.Infrastructure.Data;
-using System.Globalization;
 using DaySpaPet.WebApi.UseCases;
-using Ardalis.GuardClauses;
-using DaySpaPet.WebApi.Core.Interfaces;
 using DaySpaPet.WebApi.SharedKernel;
+using FastEndpoints.ApiExplorer;
 
 var logger = Log.Logger = new LoggerConfiguration()
   .Enrich.FromLogContext()
@@ -36,6 +35,7 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
   options.MinimumSameSitePolicy = SameSiteMode.None;
 });
 
+builder.Services.AddSharedKernel(microsoftLogger);
 builder.Services.AddCoreServices(microsoftLogger);
 // Infrastructure
 builder.Services.AddHttpContextAccessor();
@@ -45,11 +45,11 @@ builder.Services.AddInfrastructureServices(microsoftLogger, builder.Environment.
 
 
 builder.Services.AddFastEndpoints();
-//builder.Services.AddFastEndpointsApiExplorer();
+// builder.Services.AddFastEndpointsApiExplorer();
 builder.Services.SwaggerDocument(o =>
 {
   o.ShortSchemaNames = true;
-  o.DocumentSettings = s => s.OperationProcessors.Add(new AddRequestOriginClockTimeZoneId());
+  o.DocumentSettings = s => s.OperationProcessors.Add(new AddRequestOriginClockTimeZoneId(_ => _.Strict = true));
 });
 
 //builder.Services.AddSwaggerGen(c =>
@@ -112,53 +112,51 @@ void ConfigureMediatR()
 
 void BootstrapDatabase(WebApplication app)
 {
-  using (var scope = app.Services.CreateScope())
-  {
-    var services = scope.ServiceProvider;
+  using var scope = app.Services.CreateScope();
+  var services = scope.ServiceProvider;
 
 #pragma warning disable CA1031 // Do not catch general exception types
-    try
+  try
+  {
+    var context = services.GetRequiredService<AppDbContext>();
+    var loggerFactory = new LoggerFactory();
+    var logger = loggerFactory.CreateLogger(app.GetType());
+
+    var dbConfig = builder.Configuration.GetSection("Infrastructure:Databases:DaySpaPetDb");
+
+    bool? dbWasDropped = null;
+    if (dbConfig.HasTruthySectionValue("Drop"))
     {
-      var context = services.GetRequiredService<AppDbContext>();
-      var loggerFactory = new LoggerFactory();
-      var logger = loggerFactory.CreateLogger(app.GetType());
-
-      var dbConfig = builder.Configuration.GetSection("Infrastructure:Databases:DaySpaPetDb");
-
-      bool? dbWasDropped = null;
-      if (dbConfig.HasTruthySectionValue("Drop"))
-      { 
-        logger.LogInformation($"Dropping database because the environment variable \"Drop\" has truthy value");
-        dbWasDropped = context.Database.EnsureDeleted();
-      } 
-      if (dbConfig.HasTruthySectionValue("MustExist"))
-      {
-        logger.LogInformation($"Ensuring database exists because the environment variable \"MustExist\" has truthy value");
-        context.Database.EnsureCreated();
-
-        if (dbConfig.HasTruthySectionValue("RunAnyPendingMigrations"))
-        { 
-          logger.LogInformation($"Initatiing any pending database migrations because the environment variable \"RunAnyPendingMigrations\" has truthy value");
-          context.Database.Migrate();
-        }
-      }
-      else
-      {
-        if (dbWasDropped!.Value)
-        {
-          logger.LogInformation($"Exiting early: Database does not exist, and also the environment variable \"MustExist\" has falsy value");
-          Environment.Exit(0);
-        }
-      }
-      
+      logger.LogWarning("Dropping database because the environment variable \"Drop\" has truthy value");
+      dbWasDropped = context.Database.EnsureDeleted();
     }
-    catch (Exception ex)
+    if (dbConfig.HasTruthySectionValue("MustExist"))
     {
-      var logger = services.GetRequiredService<ILogger<Program>>();
-      logger.LogError(ex, "An error occurred seeding the DB. {ExceptionMessage}", ex.Message);
+      logger.LogInformation($"Ensuring database exists because the environment variable \"MustExist\" has truthy value");
+      context.Database.EnsureCreated();
+
+      if (dbConfig.HasTruthySectionValue("RunAnyPendingMigrations"))
+      {
+        logger.LogInformation($"Initatiing any pending database migrations because the environment variable \"RunAnyPendingMigrations\" has truthy value");
+        context.Database.Migrate();
+      }
     }
-#pragma warning restore CA1031 // Do not catch general exception types
+    else
+    {
+      if (dbWasDropped!.Value)
+      {
+        logger.LogInformation($"Exiting early: Database does not exist, and also the environment variable \"MustExist\" has falsy value");
+        Environment.Exit(0);
+      }
+    }
+
   }
+  catch (Exception ex)
+  {
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "An error occurred seeding the DB. {ExceptionMessage}", ex.Message);
+  }
+#pragma warning restore CA1031 // Do not catch general exception types
 }
 
 // Make the implicit Program.cs class public, so integration tests can reference the correct assembly for host building

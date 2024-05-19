@@ -3,17 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0-Global Items", "0-Global Items", "{2F48D1CB-C5C8-4D95-9B3E-BF5DB3B038C7}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-		.gitattributes = .gitattributes
-		.gitignore = .gitignore
-		.globalconfig = .globalconfig
-		global.json = global.json
-		LICENSE.md = LICENSE.md
-		README.md = README.md
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2-Application", "2-Application", "{A8A049E5-2BBA-43C4-B530-4E4C47913CF9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1-Core", "1-Core", "{A8DD77C3-BFDF-4E0A-BACD-1648A1F929B3}"
@@ -39,6 +28,22 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0-Solution Items", "0-Solut
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaySpaPet.WebApi.SharedKernel", "DaySpaPet.WebApi.SharedKernel\DaySpaPet.WebApi.SharedKernel.csproj", "{33C4EAE0-5C63-4382-B7CD-473C5AD95930}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0-Global", "0-Global", "{9D184D86-FB82-4FB3-B99F-74A9E72F06F3}"
+	ProjectSection(SolutionItems) = preProject
+		..\.dockerignore = ..\.dockerignore
+		..\.editorconfig = ..\.editorconfig
+		..\.gitattributes = ..\.gitattributes
+		..\.gitignore = ..\.gitignore
+		..\.globalconfig = ..\.globalconfig
+		..\docker-compose.yml = ..\docker-compose.yml
+		..\dotnet-clean-sln.bat = ..\dotnet-clean-sln.bat
+		..\dotnet-restore-sln.bat = ..\dotnet-restore-sln.bat
+		..\dotnet-workload-restore.bat = ..\dotnet-workload-restore.bat
+		..\global.json = ..\global.json
+		..\LICENSE.md = ..\LICENSE.md
+		..\README.md = ..\README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

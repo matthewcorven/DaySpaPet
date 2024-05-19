@@ -10,4 +10,5 @@
         "titleBar.activeBackground": "#333065",
         "titleBar.activeForeground": "#FCFCFE"
     },
+    "github.copilot.inlineSuggest.enable": true,
 }

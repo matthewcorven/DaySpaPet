@@ -6,12 +6,8 @@ namespace DaySpaPet.WebApi.Core.ClientAggregate.Events;
 /// A domain event that is dispatched whenever a client is deleted.
 /// The DeleteClientService is used to dispatch this event.
 /// </summary>
-internal class ClientDeactivationRequestedEvent : DomainEventBase
+internal class ClientDeactivationRequestedEvent(int clientId, OriginClock originClock) 
+  : DomainEventBase(originClock)
 {
-  public int ClientId { get; set; }
-
-  public ClientDeactivationRequestedEvent(int clientId, OriginClock originClock) : base(originClock)
-  {
-    ClientId = clientId;
-  }
+  public int ClientId { get; set; } = clientId;
 }

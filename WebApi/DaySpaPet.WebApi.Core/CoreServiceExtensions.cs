@@ -11,7 +11,7 @@ public static class CoreServiceExtensions
     //services.AddScoped<IToDoItemSearchService, ToDoItemSearchService>();
     services.AddScoped<IDeactivateClientService, DeactivateClientService>();
     
-    logger.LogInformation("{Project} services registered", "Core");
+    logger.LogInformation("{Project} services registered", nameof(DaySpaPet.WebApi.Core));
 
     return services;
   }

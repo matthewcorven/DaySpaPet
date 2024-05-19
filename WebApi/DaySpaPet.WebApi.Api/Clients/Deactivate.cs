@@ -3,6 +3,7 @@ using Ardalis.Result;
 using MediatR;
 using DaySpaPet.WebApi.UseCases.Clients.Deactivate;
 using DaySpaPet.WebApi.Core.Interfaces;
+using DaySpaPet.WebApi.SharedKernel;
 
 namespace DaySpaPet.WebApi.Api.Clients;
 
@@ -15,10 +16,12 @@ namespace DaySpaPet.WebApi.Api.Clients;
 public class Deactivate : Endpoint<DeactivateClientRequest>
 {
   private readonly IMediator _mediator;
+  private readonly AppUserRequestContext _appUserRequestContext;
 
-  public Deactivate(IMediator mediator)
+  public Deactivate(IMediator mediator, AppUserRequestContext appUserRequestContext)
   {
     _mediator = mediator;
+    _appUserRequestContext = appUserRequestContext;
   }
 
   public override void Configure()
@@ -31,8 +34,8 @@ public class Deactivate : Endpoint<DeactivateClientRequest>
     DeactivateClientRequest request,
     CancellationToken cancellationToken)
   {
-    IRequestOriginContextProvider rocP = Resolve<IRequestOriginContextProvider>();
-    var command = new DeactivateClientCommand(request.ClientId, rocP.GetOriginClock());
+    var command = new DeactivateClientCommand(
+      request.ClientId, _appUserRequestContext.ClockSnapshot);
 
     var result = await _mediator.Send(command);
 

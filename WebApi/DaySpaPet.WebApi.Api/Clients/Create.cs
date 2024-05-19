@@ -1,4 +1,5 @@
 ﻿using DaySpaPet.WebApi.Core.Interfaces;
+using DaySpaPet.WebApi.SharedKernel;
 using DaySpaPet.WebApi.UseCases.Clients.Create;
 using FastEndpoints;
 using MediatR;
@@ -14,10 +15,12 @@ namespace DaySpaPet.WebApi.Api.Clients;
 public class Create : Endpoint<CreateClientRequest, CreateClientResponse>
 {
   private readonly IMediator _mediator;
+  private readonly AppUserRequestContext _appUserRequestContext;
 
-  public Create(IMediator mediator)
+  public Create(IMediator mediator, AppUserRequestContext appUserRequestContext)
   {
     _mediator = mediator;
+    _appUserRequestContext = appUserRequestContext;
   }
 
   public override void Configure()
@@ -49,7 +52,6 @@ public class Create : Endpoint<CreateClientRequest, CreateClientResponse>
     CreateClientRequest request,
     CancellationToken cancellationToken)
   {
-    IRequestOriginContextProvider rocP = Resolve<IRequestOriginContextProvider>();
     var result = await _mediator.Send(new CreateClientCommand(
         request.FirstName!,
         request.LastName!,
@@ -57,7 +59,7 @@ public class Create : Endpoint<CreateClientRequest, CreateClientResponse>
         request.PhoneNumber!,
         request.PhoneExtension!,
         request.EmailAddress!,
-        rocP.GetOriginClock())
+        _appUserRequestContext.ClockSnapshot)
       , cancellationToken);
 
     if (result.IsSuccess)

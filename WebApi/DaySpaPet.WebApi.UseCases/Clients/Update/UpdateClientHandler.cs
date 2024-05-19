@@ -1,18 +1,17 @@
 ﻿using Ardalis.Result;
 using DaySpaPet.WebApi.SharedKernel;
 using DaySpaPet.WebApi.Core.ClientAggregate;
-using DaySpaPet.WebApi.Core.Interfaces;
 
 namespace DaySpaPet.WebApi.UseCases.Clients.Update;
 public class UpdateClientHandler : ICommandHandler<UpdateClientCommand, Result<ClientDTO>>
 {
-  private readonly IRequestOriginContextProvider _rocP;
   private readonly IRepository<Client> _repository;
+  private readonly AppUserRequestContext _appUserRequestContext;
 
-  public UpdateClientHandler(IRequestOriginContextProvider rocP, IRepository<Client> repository)
+  public UpdateClientHandler(IRepository<Client> repository, AppUserRequestContext appUserRequestContext)
   {
-    _rocP = rocP;
     _repository = repository;
+    _appUserRequestContext = appUserRequestContext;
   }
 
   public async Task<Result<ClientDTO>> Handle(UpdateClientCommand request, CancellationToken cancellationToken)
@@ -23,7 +22,7 @@ public class UpdateClientHandler : ICommandHandler<UpdateClientCommand, Result<C
       return Result.NotFound();
     }
 
-    var originClock = _rocP.GetOriginClock();
+    var originClock = _appUserRequestContext.ClockSnapshot;
 
     existingClient.UpdateName(request.FirstName, request.LastName, originClock);
     existingClient.UpdatePhone(request.PhoneCountryCode, request.PhoneNumber, request.PhoneExtension);
