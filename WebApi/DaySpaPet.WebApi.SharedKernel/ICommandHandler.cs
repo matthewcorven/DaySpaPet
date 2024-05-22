@@ -8,6 +8,6 @@ namespace DaySpaPet.WebApi.SharedKernel;
 /// <typeparam name="TCommand"></typeparam>
 /// <typeparam name="TResponse"></typeparam>
 public interface ICommandHandler<in TCommand, TResponse> : IRequestHandler<TCommand, TResponse>
-        where TCommand : ICommand<TResponse>
+								where TCommand : ICommand<TResponse>
 {
 }

@@ -5,6 +5,6 @@
 /// </summary>
 public interface IDomainEventDispatcher
 {
-  Task DispatchAndClearEvents(IEnumerable<EntityBase> entitiesWithEvents);
-  Task DispatchAndClearEvents<TId>(IEnumerable<EntityBase<TId>> entitiesWithEvents) where TId : struct, IEquatable<TId>;
+	Task DispatchAndClearEvents(IEnumerable<EntityBase> entitiesWithEvents);
+	Task DispatchAndClearEvents<TId>(IEnumerable<EntityBase<TId>> entitiesWithEvents) where TId : struct, IEquatable<TId>;
 }

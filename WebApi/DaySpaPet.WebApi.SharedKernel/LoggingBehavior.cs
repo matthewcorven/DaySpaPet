@@ -25,7 +25,7 @@ namespace DaySpaPet.WebApi.SharedKernel;
 /// <typeparam name="TRequest"></typeparam>
 /// <typeparam name="TResponse"></typeparam>
 public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-  where TRequest : IRequest<TResponse>
+		where TRequest : IRequest<TResponse>
 {
 	private readonly ILogger<Mediator> _logger;
 

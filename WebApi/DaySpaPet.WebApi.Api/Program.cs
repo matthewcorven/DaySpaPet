@@ -17,9 +17,9 @@ using DaySpaPet.WebApi.SharedKernel;
 using FastEndpoints.ApiExplorer;
 
 var logger = Log.Logger = new LoggerConfiguration()
-  .Enrich.FromLogContext()
-  .WriteTo.Console(formatProvider: new CultureInfo("en-US"))
-  .CreateLogger();
+		.Enrich.FromLogContext()
+		.WriteTo.Console(formatProvider: new CultureInfo("en-US"))
+		.CreateLogger();
 
 logger.Information("Starting web host");
 
@@ -31,8 +31,8 @@ var microsoftLogger = loggerFactory.CreateLogger<Program>();
 
 builder.Services.Configure<CookiePolicyOptions>(options =>
 {
-  options.CheckConsentNeeded = context => true;
-  options.MinimumSameSitePolicy = SameSiteMode.None;
+	options.CheckConsentNeeded = context => true;
+	options.MinimumSameSitePolicy = SameSiteMode.None;
 });
 
 builder.Services.AddSharedKernel(microsoftLogger);
@@ -48,8 +48,8 @@ builder.Services.AddFastEndpoints();
 // builder.Services.AddFastEndpointsApiExplorer();
 builder.Services.SwaggerDocument(o =>
 {
-  o.ShortSchemaNames = true;
-  o.DocumentSettings = s => s.OperationProcessors.Add(new AddRequestOriginClockTimeZoneId(_ => _.Strict = true));
+	o.ShortSchemaNames = true;
+	o.DocumentSettings = s => s.OperationProcessors.Add(new AddRequestOriginClockTimeZoneId(_ => _.Strict = true));
 });
 
 //builder.Services.AddSwaggerGen(c =>
@@ -65,10 +65,10 @@ ConfigureMediatR();
 // add list services for diagnostic purposes - see https://github.com/ardalis/AspNetCoreStartupServices
 builder.Services.Configure<ServiceConfig>(config =>
 {
-  config.Services = new List<ServiceDescriptor>(builder.Services);
+	config.Services = new List<ServiceDescriptor>(builder.Services);
 
-  // optional - default path to view services is /listallservices - recommended to choose your own path
-  config.Path = "/listservices";
+	// optional - default path to view services is /listallservices - recommended to choose your own path
+	config.Path = "/listservices";
 });
 
 
@@ -76,13 +76,13 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-  app.UseDeveloperExceptionPage();
-  app.UseShowAllServicesMiddleware(); // see https://github.com/ardalis/AspNetCoreStartupServices
+	app.UseDeveloperExceptionPage();
+	app.UseShowAllServicesMiddleware(); // see https://github.com/ardalis/AspNetCoreStartupServices
 }
 else
 {
-  app.UseDefaultExceptionHandler(); // from FastEndpoints
-  app.UseHsts();
+	app.UseDefaultExceptionHandler(); // from FastEndpoints
+	app.UseHsts();
 }
 
 //Add support to logging request with SERILOG
@@ -102,64 +102,64 @@ app.Run();
 
 void ConfigureMediatR()
 {
-  var mediatRAssemblies = new[]
-  {
-    Assembly.GetAssembly(typeof(CoreAssemblyLocator)),
-    Assembly.GetAssembly(typeof(UseCaseAssemblyLocator)),
-    Assembly.GetAssembly(typeof(InfrastructureAssemblyLocator))
-  };
-  
-  builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(mediatRAssemblies!));
-  builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-  builder.Services.AddScoped<IDomainEventDispatcher, MediatRDomainEventDispatcher>();
+	var mediatRAssemblies = new[]
+	{
+				Assembly.GetAssembly(typeof(CoreAssemblyLocator)),
+				Assembly.GetAssembly(typeof(UseCaseAssemblyLocator)),
+				Assembly.GetAssembly(typeof(InfrastructureAssemblyLocator))
+		};
+
+	builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(mediatRAssemblies!));
+	builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+	builder.Services.AddScoped<IDomainEventDispatcher, MediatRDomainEventDispatcher>();
 }
 
 void BootstrapDatabase(WebApplication app)
 {
-  using var scope = app.Services.CreateScope();
-  var services = scope.ServiceProvider;
+	using var scope = app.Services.CreateScope();
+	var services = scope.ServiceProvider;
 
 #pragma warning disable CA1031 // Do not catch general exception types
-  try
-  {
-    var context = services.GetRequiredService<AppDbContext>();
-    var loggerFactory = new LoggerFactory();
-    var logger = loggerFactory.CreateLogger(app.GetType());
+	try
+	{
+		var context = services.GetRequiredService<AppDbContext>();
+		var loggerFactory = new LoggerFactory();
+		var logger = loggerFactory.CreateLogger(app.GetType());
 
-    var dbConfig = builder.Configuration.GetSection("Infrastructure:Databases:DaySpaPetDb");
+		var dbConfig = builder.Configuration.GetSection("Infrastructure:Databases:DaySpaPetDb");
 
-    bool? dbWasDropped = null;
-    if (dbConfig.HasTruthySectionValue("Drop"))
-    {
-      logger.LogWarning("Dropping database because the environment variable \"Drop\" has truthy value");
-      dbWasDropped = context.Database.EnsureDeleted();
-    }
-    if (dbConfig.HasTruthySectionValue("MustExist"))
-    {
-      logger.LogInformation($"Ensuring database exists because the environment variable \"MustExist\" has truthy value");
-      context.Database.EnsureCreated();
+		bool? dbWasDropped = null;
+		if (dbConfig.HasTruthySectionValue("Drop"))
+		{
+			logger.LogWarning("Dropping database because the environment variable \"Drop\" has truthy value");
+			dbWasDropped = context.Database.EnsureDeleted();
+		}
+		if (dbConfig.HasTruthySectionValue("MustExist"))
+		{
+			logger.LogInformation($"Ensuring database exists because the environment variable \"MustExist\" has truthy value");
+			context.Database.EnsureCreated();
 
-      if (dbConfig.HasTruthySectionValue("RunAnyPendingMigrations"))
-      {
-        logger.LogInformation($"Initatiing any pending database migrations because the environment variable \"RunAnyPendingMigrations\" has truthy value");
-        context.Database.Migrate();
-      }
-    }
-    else
-    {
-      if (dbWasDropped!.Value)
-      {
-        logger.LogInformation($"Exiting early: Database does not exist, and also the environment variable \"MustExist\" has falsy value");
-        Environment.Exit(0);
-      }
-    }
+			if (dbConfig.HasTruthySectionValue("RunAnyPendingMigrations"))
+			{
+				logger.LogInformation($"Initatiing any pending database migrations because the environment variable \"RunAnyPendingMigrations\" has truthy value");
+				context.Database.Migrate();
+			}
+		}
+		else
+		{
+			if (dbWasDropped!.Value)
+			{
+				logger.LogInformation($"Exiting early: Database does not exist, and also the environment variable \"MustExist\" has falsy value");
+				Environment.Exit(0);
+			}
+		}
 
-  }
-  catch (Exception ex)
-  {
-    var logger = services.GetRequiredService<ILogger<Program>>();
-    logger.LogError(ex, "An error occurred seeding the DB. {ExceptionMessage}", ex.Message);
-  }
+	}
+	catch (Exception ex)
+	{
+		var logger = services.GetRequiredService<ILogger<Program>>();
+		logger.LogError(ex, "An error occurred seeding the DB. {ExceptionMessage}", ex.Message);
+	}
 #pragma warning restore CA1031 // Do not catch general exception types
 }
 

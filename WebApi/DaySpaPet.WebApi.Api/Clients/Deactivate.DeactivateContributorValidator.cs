@@ -8,9 +8,9 @@ namespace DaySpaPet.WebApi.Api.Clients;
 /// </summary>
 public class DeactivateClientValidator : Validator<DeactivateClientRequest>
 {
-  public DeactivateClientValidator()
-  {
-    RuleFor(x => x.ClientId)
-      .GreaterThan(0);
-  }
+	public DeactivateClientValidator()
+	{
+		RuleFor(x => x.ClientId)
+				.GreaterThan(0);
+	}
 }

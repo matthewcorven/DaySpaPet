@@ -11,33 +11,33 @@ namespace DaySpaPet.WebApi.Api.Clients;
 /// List clients - returns a ClientListResponse containing the Clients.
 /// </remarks>
 public class List
-  : Endpoint<ClientListRequest, ClientListResponse>
+		: Endpoint<ClientListRequest, ClientListResponse>
 {
-  private readonly IMediator _mediator;
+	private readonly IMediator _mediator;
 
-  public List(IMediator mediator)
-  {
-    _mediator = mediator;
-  }
+	public List(IMediator mediator)
+	{
+		_mediator = mediator;
+	}
 
-  public override void Configure()
-  {
-    Get(ClientListRequest.Route);
-    AllowAnonymous();
-  }
+	public override void Configure()
+	{
+		Get(ClientListRequest.Route);
+		AllowAnonymous();
+	}
 
-  public override async Task HandleAsync(ClientListRequest request, CancellationToken ct)
-  {
-    var result = await _mediator.Send(new ListClientsShallowQuery(request.Skip, request.Take), ct);
+	public override async Task HandleAsync(ClientListRequest request, CancellationToken ct)
+	{
+		var result = await _mediator.Send(new ListClientsShallowQuery(request.Skip, request.Take), ct);
 
-    if (result.IsSuccess)
-    {
-      Response = new ClientListResponse
-      {
-        Clients = result.Value.Select(c => new ClientRecord(c.Id, c.FirstName, c.LastName,
-        c.PhoneCountryCode, c.PhoneNumber, c.PhoneExtension!,
-        c.Status, c.EmailAddress!)).ToList().AsReadOnly()
-      };
-    }
-  }
+		if (result.IsSuccess)
+		{
+			Response = new ClientListResponse
+			{
+				Clients = result.Value.Select(c => new ClientRecord(c.Id, c.FirstName, c.LastName,
+				c.PhoneCountryCode, c.PhoneNumber, c.PhoneExtension!,
+				c.Status, c.EmailAddress!)).ToList().AsReadOnly()
+			};
+		}
+	}
 }

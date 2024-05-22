@@ -8,62 +8,62 @@ namespace DaySpaPet.WebApi.Infrastructure.Data;
 
 public partial class AppDbContext : DbContext
 {
-  private readonly IDomainEventDispatcher? _dispatcher;
+	private readonly IDomainEventDispatcher? _dispatcher;
 
-  public AppDbContext(DbContextOptions<AppDbContext> options,
-    IDomainEventDispatcher? dispatcher)
-      : base(options)
-  {
-    _dispatcher = dispatcher;
-  }
+	public AppDbContext(DbContextOptions<AppDbContext> options,
+			IDomainEventDispatcher? dispatcher)
+					: base(options)
+	{
+		_dispatcher = dispatcher;
+	}
 
-  public DbSet<Client> Clients => Set<Client>();
-  public DbSet<Pet> Pets => Set<Pet>();
+	public DbSet<Client> Clients => Set<Client>();
+	public DbSet<Pet> Pets => Set<Pet>();
 
-  protected override void OnModelCreating(ModelBuilder modelBuilder)
-  {
-    base.OnModelCreating(modelBuilder);
-    modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+	protected override void OnModelCreating(ModelBuilder modelBuilder)
+	{
+		base.OnModelCreating(modelBuilder);
+		modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
 #if DEBUG
-    SetupSeedData(modelBuilder);
+		SetupSeedData(modelBuilder);
 #endif
-  }
+	}
 
-  private static void SetupSeedData(ModelBuilder modelBuilder)
-  {
-    // Generate seed data with Bogus, which will then be used in migrations
-    var dbSeeder = new DatabaseSeeder();
+	private static void SetupSeedData(ModelBuilder modelBuilder)
+	{
+		// Generate seed data with Bogus, which will then be used in migrations
+		var dbSeeder = new DatabaseSeeder();
 
-    // Apply the seed data on the tables
-    modelBuilder.Entity<Client>().HasData(dbSeeder.Clients);
-  }
+		// Apply the seed data on the tables
+		modelBuilder.Entity<Client>().HasData(dbSeeder.Clients);
+	}
 
-  public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
-  {
-    var before = ChangeTracker.Entries<EntityBase>()
-        .Select(e => e.Entity)
-        .Where(e => e.DomainEvents.Any())
-        .ToArray();
-    int result = await base.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+	public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+	{
+		var before = ChangeTracker.Entries<EntityBase>()
+						.Select(e => e.Entity)
+						.Where(e => e.DomainEvents.Any())
+						.ToArray();
+		int result = await base.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-    // ignore events if no dispatcher provided
-    if (_dispatcher == null) return result;
+		// ignore events if no dispatcher provided
+		if (_dispatcher == null) return result;
 
-    // dispatch events only if save was successful
-    var entitiesWithEvents = ChangeTracker.Entries<EntityBase>()
-        .Select(e => e.Entity)
-        .Where(e => e.DomainEvents.Any())
-        .ToArray();
+		// dispatch events only if save was successful
+		var entitiesWithEvents = ChangeTracker.Entries<EntityBase>()
+						.Select(e => e.Entity)
+						.Where(e => e.DomainEvents.Any())
+						.ToArray();
 
-    Console.WriteLine($"Emitting ({entitiesWithEvents.Count()}) domain events");
-    await _dispatcher.DispatchAndClearEvents(entitiesWithEvents);
+		Console.WriteLine($"Emitting ({entitiesWithEvents.Count()}) domain events");
+		await _dispatcher.DispatchAndClearEvents(entitiesWithEvents);
 
-    return result;
-  }
+		return result;
+	}
 
-  public override int SaveChanges()
-  {
-    return SaveChangesAsync().GetAwaiter().GetResult();
-  }
+	public override int SaveChanges()
+	{
+		return SaveChangesAsync().GetAwaiter().GetResult();
+	}
 }

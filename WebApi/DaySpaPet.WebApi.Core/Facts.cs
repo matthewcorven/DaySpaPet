@@ -2,5 +2,5 @@
 
 internal static class Facts
 {
-  public static string NotSet = "!";
+	public static string NotSet = "!";
 }

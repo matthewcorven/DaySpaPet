@@ -6,13 +6,13 @@ using Microsoft.Extensions.Logging;
 namespace DaySpaPet.WebApi.Core;
 public static class CoreServiceExtensions
 {
-  public static IServiceCollection AddCoreServices(this IServiceCollection services, ILogger logger)
-  {
-    //services.AddScoped<IToDoItemSearchService, ToDoItemSearchService>();
-    services.AddScoped<IDeactivateClientService, DeactivateClientService>();
-    
-    logger.LogInformation("{Project} services registered", nameof(DaySpaPet.WebApi.Core));
+	public static IServiceCollection AddCoreServices(this IServiceCollection services, ILogger logger)
+	{
+		//services.AddScoped<IToDoItemSearchService, ToDoItemSearchService>();
+		services.AddScoped<IDeactivateClientService, DeactivateClientService>();
 
-    return services;
-  }
+		logger.LogInformation("{Project} services registered", nameof(DaySpaPet.WebApi.Core));
+
+		return services;
+	}
 }
