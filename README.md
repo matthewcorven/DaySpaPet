@@ -30,7 +30,8 @@ I've tried my very best to capture here each influence this "project" has to cre
   - Ref: [Serilog](https://serilog.net/)
   - Ideally, in development environment:
     - Output all SQL to both the console and a timestamped file
-- Ref: [Saga Orchestration using MassTransit in .NET](https://medium.com/@ebubekirdinc/saga-orchestration-using-masstransit-in-net-9a2fcb427c1a)
+- Introduce Saga orchestration for long-lasting business processes
+  - Ref: [Saga Orchestration using MassTransit in .NET](https://medium.com/@ebubekirdinc/saga-orchestration-using-masstransit-in-net-9a2fcb427c1a)
 - Remove Swashbuckle, replace with NSwag
   - Ref: [Get started with NSwag and ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-nswag?view=aspnetcore-8.0&tabs=visual-studio)
 - Strongly typed IDs

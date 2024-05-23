@@ -48,19 +48,17 @@ public class Create : Endpoint<CreateClientRequest, CreateClientResponse>
 		});
 	}
 
-	public override async Task HandleAsync(
-			CreateClientRequest request,
-			CancellationToken cancellationToken)
+	public override async Task HandleAsync(CreateClientRequest req, CancellationToken ct)
 	{
 		var result = await _mediator.Send(new CreateClientCommand(
-						request.FirstName!,
-						request.LastName!,
-						request.PhoneCountryCode!,
-						request.PhoneNumber!,
-						request.PhoneExtension!,
-						request.EmailAddress!,
+						req.FirstName!,
+						req.LastName!,
+						req.PhoneCountryCode!,
+						req.PhoneNumber!,
+						req.PhoneExtension!,
+						req.EmailAddress!,
 						_appUserRequestContext.ClockSnapshot)
-				, cancellationToken);
+				, ct);
 
 		if (result.IsSuccess)
 		{

@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
-        "appsettings"
+        "appsettings",
+        "Ardalis"
     ],
     "disable-copilot-comment-completions.globPatternRules": [
         "**/COMMIT_EDITMSG"
