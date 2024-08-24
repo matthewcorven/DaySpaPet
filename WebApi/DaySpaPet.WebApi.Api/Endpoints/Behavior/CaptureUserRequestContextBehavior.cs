@@ -10,56 +10,56 @@ public class CaptureUserRequestContextBehavior<TRequest, TResponse>
                 : IPipelineBehavior<TRequest, TResponse>
                         where TRequest : IRequest<TResponse> {
 
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IClock _clock;
-    private readonly IGlobalizationService _globalizationService;
-    private readonly AppUserRequestContext _appUserRequestContext;
+  private readonly IHttpContextAccessor _httpContextAccessor;
+  private readonly IClock _clock;
+  private readonly IGlobalizationService _globalizationService;
+  private readonly AppUserRequestContext _appUserRequestContext;
 
-    public CaptureUserRequestContextBehavior(IHttpContextAccessor httpContextAccessor,
-            IClock clock,
-            IGlobalizationService globalizationService,
-                    AppUserRequestContext appUserRequestContext) {
-        _httpContextAccessor = httpContextAccessor;
-        _clock = clock;
-        _globalizationService = globalizationService;
-        _appUserRequestContext = appUserRequestContext;
+  public CaptureUserRequestContextBehavior(IHttpContextAccessor httpContextAccessor,
+          IClock clock,
+          IGlobalizationService globalizationService,
+                  AppUserRequestContext appUserRequestContext) {
+    _httpContextAccessor = httpContextAccessor;
+    _clock = clock;
+    _globalizationService = globalizationService;
+    _appUserRequestContext = appUserRequestContext;
+  }
+
+  public Task<TResponse> Handle(TRequest request,
+                  RequestHandlerDelegate<TResponse> next,
+                  CancellationToken cancellationToken
+          ) {
+    var userUPN = _httpContextAccessor.HttpContext?.User.Identity?.Name;
+    // Guard.Against.NullOrEmpty(userUPN, "User UPN is required.");
+
+    // Access request header
+    var requestHeaders = _httpContextAccessor.HttpContext!.Request.Headers;
+    var findHeader = Constants.HttpRequestHeaderKey;
+    // Get the time zone ID from the request header
+    requestHeaders.TryGetValue(findHeader, out var timeZoneIdStringValues);
+    Guard.Against.Null(timeZoneIdStringValues, $"HTTP request header \"{findHeader}\" is required.");
+    var timeZoneIdValue = timeZoneIdStringValues.FirstOrDefault();
+    Guard.Against.NullOrWhiteSpace(timeZoneIdValue, $"HTTP request header \"{findHeader}\" value \"{timeZoneIdValue}\" is not understood to understand a string.");
+
+    // Get the current UTC time
+    var now = _clock.GetCurrentInstant();
+    // Get the time zone from the ID
+    if (!_globalizationService.TryGetTimeZoneById(timeZoneIdValue, out var zone)) {
+      throw new InvalidTimeZoneException($"Time zone ID \"{timeZoneIdValue}\" is not a valid time zone ID.");
     }
 
-    public Task<TResponse> Handle(TRequest request,
-                    RequestHandlerDelegate<TResponse> next,
-                    CancellationToken cancellationToken
-            ) {
-        var userUPN = _httpContextAccessor.HttpContext?.User.Identity?.Name;
-        // Guard.Against.NullOrEmpty(userUPN, "User UPN is required.");
+    // Get the ZonedDateTime in the specified zone
+    var zonedDateTime = now.InZone(zone!);
 
-        // Access request header
-        var requestHeaders = _httpContextAccessor.HttpContext!.Request.Headers;
-        var findHeader = Constants.HttpRequestHeaderKey;
-        // Get the time zone ID from the request header
-        requestHeaders.TryGetValue(findHeader, out var timeZoneIdStringValues);
-        Guard.Against.Null(timeZoneIdStringValues, $"HTTP request header \"{findHeader}\" is required.");
-        var timeZoneIdValue = timeZoneIdStringValues.FirstOrDefault();
-        Guard.Against.NullOrWhiteSpace(timeZoneIdValue, $"HTTP request header \"{findHeader}\" value \"{timeZoneIdValue}\" is not understood to understand a string.");
+    // Convert to LocalDateTime
+    var originLocalDateTime = zonedDateTime.LocalDateTime;
+    var isDst = zonedDateTime.IsDaylightSavingTime();
 
-        // Get the current UTC time
-        var now = _clock.GetCurrentInstant();
-        // Get the time zone from the ID
-        if (!_globalizationService.TryGetTimeZoneById(timeZoneIdValue, out var zone)) {
-            throw new InvalidTimeZoneException($"Time zone ID \"{timeZoneIdValue}\" is not a valid time zone ID.");
-        }
+    var originClock = new OriginClock(originLocalDateTime, timeZoneIdValue, isDst);
 
-        // Get the ZonedDateTime in the specified zone
-        var zonedDateTime = now.InZone(zone!);
+    _appUserRequestContext.Set(userUPN ?? "", [], originClock);
 
-        // Convert to LocalDateTime
-        var originLocalDateTime = zonedDateTime.LocalDateTime;
-        var isDst = zonedDateTime.IsDaylightSavingTime();
-
-        var originClock = new OriginClock(originLocalDateTime, timeZoneIdValue, isDst);
-
-        _appUserRequestContext.Set(userUPN ?? "", [], originClock);
-
-        return next();
-    }
+    return next();
+  }
 
 }

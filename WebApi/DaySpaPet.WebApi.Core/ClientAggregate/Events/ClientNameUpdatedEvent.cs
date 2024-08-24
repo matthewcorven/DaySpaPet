@@ -8,9 +8,9 @@ public class ClientNameUpdatedEvent(
         string oldFirstName, string oldLastName,
         OriginClock originClock)
         : DomainEventBase(originClock) {
-    public Client Client { get; private set; } = client;
-    public string NewFirstName { get; private set; } = newFirstName;
-    public string NewLastName { get; private set; } = newLastName;
-    public string OldFirstName { get; private set; } = oldFirstName;
-    public string OldLastName { get; private set; } = oldLastName;
+  public Client Client { get; private set; } = client;
+  public string NewFirstName { get; private set; } = newFirstName;
+  public string NewLastName { get; private set; } = newLastName;
+  public string OldFirstName { get; private set; } = oldFirstName;
+  public string OldLastName { get; private set; } = oldLastName;
 }

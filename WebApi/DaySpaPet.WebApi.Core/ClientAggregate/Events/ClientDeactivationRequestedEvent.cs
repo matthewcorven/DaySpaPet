@@ -8,5 +8,5 @@ namespace DaySpaPet.WebApi.Core.ClientAggregate.Events;
 /// </summary>
 internal class ClientDeactivationRequestedEvent(int clientId, OriginClock originClock)
         : DomainEventBase(originClock) {
-    public int ClientId { get; set; } = clientId;
+  public int ClientId { get; set; } = clientId;
 }

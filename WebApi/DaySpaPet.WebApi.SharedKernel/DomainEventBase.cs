@@ -8,11 +8,11 @@ namespace DaySpaPet.WebApi.SharedKernel;
 /// Includes DateOccurred which is set on creation.
 /// </summary>
 public abstract class DomainEventBase : INotification {
-    public Instant OccurredAtInstant { get; init; }
-    public OriginClock OriginClock { get; init; }
+  public Instant OccurredAtInstant { get; init; }
+  public OriginClock OriginClock { get; init; }
 
-    protected DomainEventBase(OriginClock originClock) {
-        OccurredAtInstant = Instant.FromDateTimeUtc(DateTime.UtcNow);
-        OriginClock = originClock;
-    }
+  protected DomainEventBase(OriginClock originClock) {
+    OccurredAtInstant = Instant.FromDateTimeUtc(DateTime.UtcNow);
+    OriginClock = originClock;
+  }
 }
