@@ -9,7 +9,7 @@ public sealed record ListClientsShallowHandler(IListClientsShallowQueryService q
 
   public async Task<Result<IEnumerable<ClientDTO>>> Handle(
           ListClientsShallowQuery request, CancellationToken cancellationToken) {
-    var result = await _query.ListAsync(request.Skip, request.Take);
+    IEnumerable<ClientDTO> result = await _query.ListAsync(request.Skip, request.Take);
 
     return Result.Success(result);
   }

@@ -1,4 +1,5 @@
-﻿using DaySpaPet.WebApi.Core.ClientAggregate;
+﻿using DaySpaPet.WebApi.Core.AppUserAggregate;
+using DaySpaPet.WebApi.Core.ClientAggregate;
 using DaySpaPet.WebApi.Core.PetAggregate;
 using DaySpaPet.WebApi.SharedKernel;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,9 @@ public partial class AppDbContext : DbContext {
     _dispatcher = dispatcher;
   }
 
+  public DbSet<AppUser> AppUsers => Set<AppUser>();
+  public DbSet<AppUserRole> AppUserRoles => Set<AppUserRole>();
+  public DbSet<AppUserAssignedRole> AppUserAssignedRoles => Set<AppUserAssignedRole>();
   public DbSet<Client> Clients => Set<Client>();
   public DbSet<Pet> Pets => Set<Pet>();
 
@@ -29,7 +33,7 @@ public partial class AppDbContext : DbContext {
 
   private static void SetupSeedData(ModelBuilder modelBuilder) {
     // Generate seed data with Bogus, which will then be used in migrations
-    var dbSeeder = new DatabaseSeeder();
+    DatabaseSeeder dbSeeder = new DatabaseSeeder();
 
     // Apply the seed data on the tables
     modelBuilder.Entity<Client>().HasData(dbSeeder.Clients);
@@ -37,7 +41,7 @@ public partial class AppDbContext : DbContext {
   }
 
   public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken()) {
-    var before = ChangeTracker.Entries<EntityBase>()
+    EntityBase[] before = ChangeTracker.Entries<EntityBase>()
                     .Select(e => e.Entity)
                     .Where(e => e.DomainEvents.Any())
                     .ToArray();
@@ -48,7 +52,7 @@ public partial class AppDbContext : DbContext {
       return result;
 
     // dispatch events only if save was successful
-    var entitiesWithEvents = ChangeTracker.Entries<EntityBase>()
+    EntityBase[] entitiesWithEvents = ChangeTracker.Entries<EntityBase>()
                     .Select(e => e.Entity)
                     .Where(e => e.DomainEvents.Any())
                     .ToArray();

@@ -43,7 +43,7 @@ public static class DateOnlyGuardExtensions {
                   [CallerArgumentExpression(nameof(input))] string? inputParameterName = null,
                   string? message = null) where T : struct, IComparable {
     if (input.CompareTo(compareToDate) < 0) {
-      var comparedToText = compareToDate.Equals(DateOnly.FromDateTime(DateTime.Today)) ? "today" : compareToDate.ToString();
+      string? comparedToText = compareToDate.Equals(DateOnly.FromDateTime(DateTime.Today)) ? "today" : compareToDate.ToString();
       throw new ArgumentException(message ?? $"Date must not be before {comparedToText}.", inputParameterName);
     }
 
@@ -91,7 +91,7 @@ public static class DateOnlyGuardExtensions {
                   [CallerArgumentExpression(nameof(input))] string? inputParameterName = null,
                   string? message = null) where T : struct, IComparable {
     if (input.CompareTo(compareToDate) > 0) {
-      var comparedToText = compareToDate.Equals(DateOnly.FromDateTime(DateTime.Today)) ? "today" : compareToDate.ToString();
+      string? comparedToText = compareToDate.Equals(DateOnly.FromDateTime(DateTime.Today)) ? "today" : compareToDate.ToString();
       throw new ArgumentException(message ?? $"Date must not be after {comparedToText}.", inputParameterName);
     }
 

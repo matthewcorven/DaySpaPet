@@ -46,9 +46,9 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
       }
     }
 
-    var sw = Stopwatch.StartNew();
+    Stopwatch sw = Stopwatch.StartNew();
 
-    var response = await next();
+    TResponse? response = await next();
 
     _logger.LogInformation("Handled {RequestName} with {Response} in {ms} ms", typeof(TRequest).Name, response, sw.ElapsedMilliseconds);
     sw.Stop();

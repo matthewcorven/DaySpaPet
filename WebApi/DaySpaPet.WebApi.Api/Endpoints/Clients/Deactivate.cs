@@ -31,10 +31,10 @@ public class Deactivate : Endpoint<DeactivateClientRequest> {
   public override async Task HandleAsync(
           DeactivateClientRequest request,
           CancellationToken cancellationToken) {
-    var command = new DeactivateClientCommand(
+    DeactivateClientCommand command = new DeactivateClientCommand(
             request.ClientId, _appUserRequestContext.ClockSnapshot);
 
-    var result = await _mediator.Send(command);
+    Result result = await _mediator.Send(command);
 
     if (result.Status == ResultStatus.NotFound) {
       await SendNotFoundAsync(cancellationToken);

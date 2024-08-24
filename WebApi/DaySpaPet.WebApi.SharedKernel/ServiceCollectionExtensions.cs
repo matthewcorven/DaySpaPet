@@ -4,7 +4,7 @@ namespace DaySpaPet.WebApi.SharedKernel;
 
 public static class ServiceCollectionExtensions {
   public static void AssertImplementationIsRegisteredAs<T>(this IServiceCollection services, ServiceLifetime lifetime) {
-    var typed = typeof(T);
+    Type typed = typeof(T);
     ServiceDescriptor? svcDesc = services.FirstOrDefault(x => x.ServiceType == typed);
     {
       if (svcDesc == null) {

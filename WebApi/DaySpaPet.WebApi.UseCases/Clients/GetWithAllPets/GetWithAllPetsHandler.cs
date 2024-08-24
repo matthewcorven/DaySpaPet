@@ -14,12 +14,12 @@ public sealed class GetWithAllPetsHandler
   }
 
   public async Task<Result<ClientWithPetsDTO>> Handle(GetWithAllPetsQuery request, CancellationToken cancellationToken) {
-    var client = await _repository.GetByIdAsync(request.ClientId, cancellationToken);
+    Client? client = await _repository.GetByIdAsync(request.ClientId, cancellationToken);
     if (client == null) {
       return Result.NotFound();
     }
 
-    var clientWithPets = new ClientWithPetsDTO(client.Id, client.FirstName, client.LastName,
+    ClientWithPetsDTO clientWithPets = new ClientWithPetsDTO(client.Id, client.FirstName, client.LastName,
             client.PhoneCountryCode, client.PhoneNumber, client.PhoneExtension!, client.EmailAddress!,
             client.Pets.Select(p =>
                     new PetDTO(p.Id, p.ClientId, p.Name, p.Type, p.Breed,

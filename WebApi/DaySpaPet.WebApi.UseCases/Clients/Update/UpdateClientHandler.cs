@@ -13,12 +13,12 @@ public class UpdateClientHandler : ICommandHandler<UpdateClientCommand, Result<C
   }
 
   public async Task<Result<ClientDTO>> Handle(UpdateClientCommand request, CancellationToken cancellationToken) {
-    var existingClient = await _repository.GetByIdAsync(request.ClientId, cancellationToken);
+    Client? existingClient = await _repository.GetByIdAsync(request.ClientId, cancellationToken);
     if (existingClient == null) {
       return Result.NotFound();
     }
 
-    var originClock = _appUserRequestContext.ClockSnapshot;
+    OriginClock originClock = _appUserRequestContext.ClockSnapshot;
 
     existingClient.UpdateName(request.FirstName, request.LastName, originClock);
     existingClient.UpdatePhone(request.PhoneCountryCode, request.PhoneNumber, request.PhoneExtension);

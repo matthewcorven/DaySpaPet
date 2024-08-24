@@ -25,12 +25,12 @@ public static class StringGuardExtensions {
       return input;
     }
 
-    var ea = new System.ComponentModel.DataAnnotations.EmailAddressAttribute();
+    System.ComponentModel.DataAnnotations.EmailAddressAttribute ea = new System.ComponentModel.DataAnnotations.EmailAddressAttribute();
     if (!ea.IsValid(input.Trim())) {
       throw new ArgumentException(message ?? $"Invalid email address \"{input}\".", inputParameterName);
     }
 
-    var parts = input.Split('@');
+    string[] parts = input.Split('@');
     if (input.Length > 320 || parts.Length != 2 || parts[0].Length > 64 || parts[1].Length > 255) {
       throw new ArgumentException(message ?? $"Invalid email address \"{input}\". Length of local or domain name, or overall length, exceeds standards.", inputParameterName);
     }

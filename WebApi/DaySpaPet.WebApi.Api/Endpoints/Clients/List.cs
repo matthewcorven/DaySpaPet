@@ -26,8 +26,8 @@ public class List
   }
 
   public override async Task HandleAsync(ClientListRequest request, CancellationToken ct) {
-    var userId = User.FindFirstValue("UserID");
-    var result = await _mediator.Send(new ListClientsShallowQuery(request.Skip, request.Take), ct);
+    string? userId = User.FindFirstValue("UserID");
+    Ardalis.Result.Result<IEnumerable<UseCases.Clients.ClientDTO>> result = await _mediator.Send(new ListClientsShallowQuery(request.Skip, request.Take), ct);
 
     if (result.IsSuccess) {
       Response = new ClientListResponse {

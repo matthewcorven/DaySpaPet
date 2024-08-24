@@ -14,7 +14,7 @@ public sealed class CreateClientHandler : ICommandHandler<CreateClientCommand, R
 
   public async Task<Result<int>> Handle(CreateClientCommand request,
           CancellationToken cancellationToken) {
-    var newClient = new Client(
+    Client newClient = new Client(
             request.FirstName,
             request.LastName,
             request.PhoneCountryCode,
@@ -22,7 +22,7 @@ public sealed class CreateClientHandler : ICommandHandler<CreateClientCommand, R
             request.PhoneExtension,
             request.EmailAddress,
             request.OriginClock);
-    var createdItem = await _repository.AddAsync(newClient, cancellationToken);
+    Client createdItem = await _repository.AddAsync(newClient, cancellationToken);
 
     return createdItem.Id;
   }

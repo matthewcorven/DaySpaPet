@@ -26,7 +26,7 @@ Log.Logger = GenerateBootstrappedLogger();
 try {
   Log.Information("Starting web application");
 
-  var builder = WebApplication.CreateBuilder(args);
+  WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
   builder.Services.AddSerilog((services, lc) => lc
           // Some additional configuration in addition to that of already boostrapped logger.
           .ReadFrom.Configuration(builder.Configuration)
@@ -40,10 +40,10 @@ try {
   Guard.Against.NullOrEmpty(connectionString, nameof(connectionString));
   builder.Services.AddInfrastructureServices(builder.Environment.IsDevelopment(), connectionString!);
 
-  var jwtPublicSigningKey = builder.Configuration["Authentication:Schemes:Bearer:PublicSigningKey"];
-  var jwtPrivateSigningKey = builder.Configuration["Authentication:Schemes:Bearer:PrivateSigningKey"];
-  var jwtIssuer = builder.Configuration["Authentication:Schemes:Bearer:ValidIssuer"];
-  var jwtAudiences = builder.Configuration["Authentication:Schemes:Bearer:ValidAudiences"];
+  string? jwtPublicSigningKey = builder.Configuration["Authentication:Schemes:Bearer:PublicSigningKey"];
+  string? jwtPrivateSigningKey = builder.Configuration["Authentication:Schemes:Bearer:PrivateSigningKey"];
+  string? jwtIssuer = builder.Configuration["Authentication:Schemes:Bearer:ValidIssuer"];
+  string? jwtAudiences = builder.Configuration["Authentication:Schemes:Bearer:ValidAudiences"];
 
   builder.Services
           .AddAuthentication(
@@ -53,15 +53,16 @@ try {
                });
   builder.Services.AddAuthenticationJwtBearer(
                signingKeyOptions => {
+                 // PEM+base64 encoded public-key
                  signingKeyOptions.SigningKey = jwtPublicSigningKey;
                  signingKeyOptions.SigningStyle = TokenSigningStyle.Asymmetric;
-                 signingKeyOptions.KeyIsPemEncoded = true; // only if public key is in PEM format
+                 signingKeyOptions.KeyIsPemEncoded = true;
                },
                jwtBearerOptions => {
                  jwtBearerOptions.TokenValidationParameters.ValidIssuer = jwtIssuer;
                  jwtBearerOptions.TokenValidationParameters.ValidAudience = jwtAudiences;
-                 jwtBearerOptions.TokenValidationParameters.ValidateAudience = false;
-                 jwtBearerOptions.TokenValidationParameters.ValidateIssuer = false;
+                 jwtBearerOptions.TokenValidationParameters.ValidateAudience = true;
+                 jwtBearerOptions.TokenValidationParameters.ValidateIssuer = true;
                  jwtBearerOptions.TokenValidationParameters.ValidateLifetime = true;
                  jwtBearerOptions.TokenValidationParameters.ValidateIssuerSigningKey = true;
                  jwtBearerOptions.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtPrivateSigningKey!));
@@ -70,12 +71,12 @@ try {
     options.AddPolicy("AdministratorsOnly", x => x
             .RequireRole("Administrator")
             .RequireClaim("AdministratorID")
-            .RequireClaim("UserUPN")
+            .RequireClaim("Username")
             .RequireClaim("UserID"));
     options.AddPolicy("ManagersOnly", x => x
             .RequireRole("Manager")
             .RequireClaim("ManagerID")
-            .RequireClaim("UserUPN")
+            .RequireClaim("Username")
             .RequireClaim("UserID"));
     options.AddPolicy("EmployeeID", x => x
             .RequireRole("Employee")
@@ -108,7 +109,7 @@ try {
   });
 
 
-  var app = builder.Build();
+  WebApplication app = builder.Build();
 
   if (app.Environment.IsDevelopment()) {
     app.UseDeveloperExceptionPage();
@@ -143,7 +144,7 @@ try {
 // Make the implicit Program.cs class public, so integration tests can reference the correct assembly for host building
 public partial class Program {
   static void ConfigureMediatR(WebApplicationBuilder builder) {
-    var mediatRAssemblies = new[]
+    Assembly?[] mediatRAssemblies = new[]
     {
                 Assembly.GetAssembly(typeof(CoreAssemblyLocator)),
                 Assembly.GetAssembly(typeof(UseCaseAssemblyLocator)),
@@ -157,13 +158,13 @@ public partial class Program {
   }
 
   static void BootstrapDatabase(WebApplicationBuilder builder, WebApplication app) {
-    using var scope = app.Services.CreateScope();
-    var services = scope.ServiceProvider;
+    using IServiceScope scope = app.Services.CreateScope();
+    IServiceProvider services = scope.ServiceProvider;
 
 #pragma warning disable CA1031 // Do not catch general exception types
     try {
-      var context = services.GetRequiredService<AppDbContext>();
-      var dbConfig = builder.Configuration.GetSection("Infrastructure:Databases:DaySpaPetDb");
+      AppDbContext context = services.GetRequiredService<AppDbContext>();
+      IConfigurationSection dbConfig = builder.Configuration.GetSection("Infrastructure:Databases:DaySpaPetDb");
 
       bool? dbWasDropped = null;
       if (dbConfig.HasTruthySectionValue("Drop", out string configuredToDrop)) {
@@ -192,7 +193,7 @@ public partial class Program {
   }
 
   static Serilog.Extensions.Hosting.ReloadableLogger GenerateBootstrappedLogger() {
-    var logger = new LoggerConfiguration()
+    Serilog.Extensions.Hosting.ReloadableLogger logger = new LoggerConfiguration()
 #if DEBUG
             .MinimumLevel.Debug()
             .WriteTo.Console(new ExpressionTemplate(

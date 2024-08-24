@@ -13,7 +13,7 @@ public class ListClientsShallowQueryService
   }
 
   public async Task<IEnumerable<ClientDTO>> ListAsync(int? skip, int? take) {
-    var result = await _db.Clients.FromSqlRaw("""
+    List<ClientDTO> result = await _db.Clients.FromSqlRaw("""
 SELECT 
   Id
   ,FirstName

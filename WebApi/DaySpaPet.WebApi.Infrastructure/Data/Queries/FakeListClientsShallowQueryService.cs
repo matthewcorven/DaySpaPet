@@ -7,8 +7,8 @@ namespace DaySpaPet.WebApi.Infrastructure.Data.Queries;
 public class FakeListClientsShallowQueryService
         : IListClientsShallowQueryService {
   public async Task<IEnumerable<ClientDTO>> ListAsync(int? take, int? skip) {
-    var idIterator = 0;
-    var faked = new Faker<ClientDTO>()
+    int idIterator = 0;
+    Faker<ClientDTO> faked = new Faker<ClientDTO>()
             .UseSeed(1338)
             // Ensure all properties have rules. By default, StrictMode is false
             // Set a global policy by using Faker.DefaultStrictMode
@@ -22,7 +22,7 @@ public class FakeListClientsShallowQueryService
             .RuleFor(c => c.PhoneExtension, f => f.Random.Replace("###").OrNull(f, .92f))
             .RuleFor(c => c.EmailAddress, f => f.Person.Email);
 
-    var result = faked.Generate(250).Skip(skip ?? 0).Take(take ?? 0);
+    IEnumerable<ClientDTO> result = faked.Generate(250).Skip(skip ?? 0).Take(take ?? 0);
     return await Task.FromResult(result).ConfigureAwait(false);
   }
 }

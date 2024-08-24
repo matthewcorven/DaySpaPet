@@ -46,12 +46,12 @@ public class Client : EntityBase, IAggregateRoot {
   }
 
   public void UpdateName(string newFirstName, string newLastName, OriginClock originClock) {
-    var oldFirstName = FirstName;
-    var oldLastName = LastName;
+    string oldFirstName = FirstName;
+    string oldLastName = LastName;
     FirstName = Guard.Against.NullOrEmpty(newFirstName, nameof(newFirstName)).Trim();
     LastName = Guard.Against.NullOrEmpty(newLastName, nameof(newLastName)).Trim();
 
-    var domainEvent = new ClientNameUpdatedEvent(this, newFirstName, newLastName, oldFirstName, oldLastName, originClock);
+    ClientNameUpdatedEvent domainEvent = new ClientNameUpdatedEvent(this, newFirstName, newLastName, oldFirstName, oldLastName, originClock);
     base.RegisterDomainEvent(domainEvent);
   }
 
@@ -67,7 +67,7 @@ public class Client : EntityBase, IAggregateRoot {
 
     EmailAddress = Guard.Against.EmailInvalid(newEmailAddress.Trim());
 
-    var domainEvent = new ClientEmailAddressUpdatedEvent(this, newEmailAddress, oldEmailAddress, originClock);
+    ClientEmailAddressUpdatedEvent domainEvent = new ClientEmailAddressUpdatedEvent(this, newEmailAddress, oldEmailAddress, originClock);
     base.RegisterDomainEvent(domainEvent);
   }
 
@@ -82,7 +82,7 @@ public class Client : EntityBase, IAggregateRoot {
     Guard.Against.NullOrInvalidInput(newAnimalType, nameof(newAnimalType), AnimalType.IsNotSet);
     Guard.Against.NullOrEmpty(newPetBreed, nameof(newPetBreed));
 
-    var pet = new Pet(clientId: this.Id, newPetName, newAnimalType, newPetBreed, originClock, optionalNewPetData);
+    Pet pet = new Pet(clientId: this.Id, newPetName, newAnimalType, newPetBreed, originClock, optionalNewPetData);
     _pets.Add(pet);
   }
 }

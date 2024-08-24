@@ -10,10 +10,10 @@ public class MediatRDomainEventDispatcher : IDomainEventDispatcher {
   }
 
   public async Task DispatchAndClearEvents(IEnumerable<EntityBase> entitiesWithEvents) {
-    foreach (var entity in entitiesWithEvents) {
-      var events = entity.DomainEvents.ToArray();
+    foreach (EntityBase entity in entitiesWithEvents) {
+      DomainEventBase[] events = entity.DomainEvents.ToArray();
       entity.ClearDomainEvents();
-      foreach (var domainEvent in events) {
+      foreach (DomainEventBase? domainEvent in events) {
         await _mediator.Publish(domainEvent).ConfigureAwait(false);
       }
     }
@@ -21,10 +21,10 @@ public class MediatRDomainEventDispatcher : IDomainEventDispatcher {
 
   public async Task DispatchAndClearEvents<TId>(IEnumerable<EntityBase<TId>> entitiesWithEvents)
           where TId : struct, IEquatable<TId> {
-    foreach (var entity in entitiesWithEvents) {
-      var events = entity.DomainEvents.ToArray();
+    foreach (EntityBase<TId> entity in entitiesWithEvents) {
+      DomainEventBase[] events = entity.DomainEvents.ToArray();
       entity.ClearDomainEvents();
-      foreach (var domainEvent in events) {
+      foreach (DomainEventBase? domainEvent in events) {
         await _mediator.Publish(domainEvent).ConfigureAwait(false);
       }
     }

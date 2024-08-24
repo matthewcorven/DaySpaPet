@@ -23,7 +23,7 @@ public class DeactivateClientService : IDeactivateClientService {
 
   public async Task<Result> DeactivateClient(int clientId, OriginClock originClock) {
     _logger.LogInformation("Deactivating Client {clientId}", clientId);
-    var client = await _repository.GetByIdAsync(clientId);
+    Client? client = await _repository.GetByIdAsync(clientId);
     if (client == null)
       return Result.NotFound();
 
@@ -33,7 +33,7 @@ public class DeactivateClientService : IDeactivateClientService {
     client.UpdateStatus(ClientAccountStatus.Deactive);
     await _repository.UpdateAsync(client);
 
-    var domainEvent = new ClientDeactivationRequestedEvent(clientId, originClock);
+    ClientDeactivationRequestedEvent domainEvent = new ClientDeactivationRequestedEvent(clientId, originClock);
     await _mediator.Publish(domainEvent);
     return Result.Success();
   }

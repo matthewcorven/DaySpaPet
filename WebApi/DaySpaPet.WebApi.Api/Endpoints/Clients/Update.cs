@@ -57,7 +57,7 @@ public class Update : Endpoint<UpdateClientRequest, UpdateClientResponse> {
   public override async Task HandleAsync(
           UpdateClientRequest request,
           CancellationToken cancellationToken) {
-    var result = await _mediator.Send(new UpdateClientCommand(
+    Result<UseCases.Clients.ClientDTO> result = await _mediator.Send(new UpdateClientCommand(
             request.ClientId,
             request.FirstName!, request.LastName!,
             request.PhoneCountryCode!, request.PhoneNumber!, request.PhoneExtension!,
@@ -70,7 +70,7 @@ public class Update : Endpoint<UpdateClientRequest, UpdateClientResponse> {
 
 
     if (result.IsSuccess) {
-      var dto = result.Value;
+      UseCases.Clients.ClientDTO dto = result.Value;
       Response = new UpdateClientResponse(new ClientModel(
               dto.Id,
               dto.FirstName, dto.LastName,

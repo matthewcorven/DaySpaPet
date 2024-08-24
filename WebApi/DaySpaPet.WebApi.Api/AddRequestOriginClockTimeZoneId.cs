@@ -24,7 +24,7 @@ internal sealed class AddRequestOriginClockTimeZoneId : IOperationProcessor {
   }
 
   public bool Process(OperationProcessorContext context) {
-    var RequestHeader_OriginClockTZDBID = new OpenApiParameter() {
+    OpenApiParameter RequestHeader_OriginClockTZDBID = new OpenApiParameter() {
       Name = Constants.HttpRequestHeaderKey,
       Kind = OpenApiParameterKind.Header,
       IsRequired = true,

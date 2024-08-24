@@ -7,7 +7,7 @@ namespace DaySpaPet.WebApi.Core.PetAggregate;
 
 public sealed record OptionalNewPetData(
         double? Weight, int? Age,
-        DateOnly? BirthDate, DateOnly? AdoptionDate, DateOnly? deathDate,
+        DateOnly? BirthDate, DateOnly? AdoptionDate, DateOnly? DeathDate,
         DateOnly? MostRecentVisitDate, DateOnly? FirstVisitDate);
 
 public class Pet : EntityBase, IAggregateRoot {
@@ -80,7 +80,7 @@ public class Pet : EntityBase, IAggregateRoot {
 
   public void SetAgeAndApproximateBirthDate(int newAge) {
     Age = Guard.Against.Negative(newAge, nameof(newAge));
-    var approxBirthDate = DateOnly.FromDateTime(DateTime.Today.AddDays(-1 * newAge * 365.25));
+    DateOnly approxBirthDate = DateOnly.FromDateTime(DateTime.Today.AddDays(-1 * newAge * 365.25));
     BirthDate = approxBirthDate;
   }
 
@@ -134,7 +134,7 @@ public class Pet : EntityBase, IAggregateRoot {
     Guard.Against.Null(newNote, nameof(newNote));
     _notes.Add(newNote);
 
-    var newNoteAddedEvent = new NewNoteAddedEvent(this, newNote, originClock);
+    NewNoteAddedEvent newNoteAddedEvent = new NewNoteAddedEvent(this, newNote, originClock);
     base.RegisterDomainEvent(newNoteAddedEvent);
   }
 

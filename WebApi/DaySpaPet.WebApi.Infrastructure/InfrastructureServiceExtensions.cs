@@ -7,12 +7,9 @@ using DaySpaPet.WebApi.UseCases.Clients.ListShallow;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NodaTime;
 
 namespace DaySpaPet.WebApi.Infrastructure;
-
-
 
 public static class InfrastructureServiceExtensions {
   public static IServiceCollection AddInfrastructureServices(
@@ -23,9 +20,12 @@ public static class InfrastructureServiceExtensions {
     services.AssertImplementationIsRegisteredAs<Serilog.ILogger>(ServiceLifetime.Singleton);
     services.AssertImplementationIsRegisteredAs<IHttpContextAccessor>(ServiceLifetime.Singleton);
 
+    // Register things which this layer provides an implimentation for
     services.AddSingleton<IClock, DaySpaPetClock>();
     services.AddSingleton<IGlobalizationService, DaySpaPetGlobalizationService>();
+    services.AddScoped<IListClientsShallowQueryService, ListClientsShallowQueryService>();
 
+    // During development we want to have fake implementations 
     if (isDevelopment) {
       RegisterDevelopmentOnlyDependencies(services);
     } else {
@@ -39,17 +39,17 @@ public static class InfrastructureServiceExtensions {
   }
 
   private static void RegisterDevelopmentOnlyDependencies(IServiceCollection services) {
-    //services.AddScoped<IEmailSender, SmtpEmailSender>();
+    //services.AddScoped<IEmailSender, FakeSmtpEmailSender>();
     //services.AddScoped<IListClientsQueryService, FakeListClientsQueryService>();
     //services.AddScoped<IListIncompleteItemsQueryService, FakeListIncompleteItemsQueryService>();
-    services.AddScoped<IListClientsShallowQueryService, ListClientsShallowQueryService>();
+    services.AddTransient<IAppUserAuthenticationService, FakeDaySpaUserAuthenticationService>();
   }
 
   private static void RegisterProductionOnlyDependencies(IServiceCollection services) {
     //services.AddScoped<IEmailSender, SmtpEmailSender>();
     //services.AddScoped<IListClientsQueryService, ListClientsQueryService>();
     //services.AddScoped<IListIncompleteItemsQueryService, ListIncompleteItemsQueryService>();
-    services.AddScoped<IListClientsShallowQueryService, ListClientsShallowQueryService>();
+    services.AddTransient<IAppUserAuthenticationService, DaySpaUserAuthenticationService>();
   }
 
   private static void RegisterEF(IServiceCollection services, string connectionString) {

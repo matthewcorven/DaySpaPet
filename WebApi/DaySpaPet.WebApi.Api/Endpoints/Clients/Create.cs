@@ -48,7 +48,7 @@ public class Create : Endpoint<CreateClientRequest, CreateClientResponse> {
   }
 
   public override async Task HandleAsync(CreateClientRequest req, CancellationToken ct) {
-    var result = await _mediator.Send(new CreateClientCommand(
+    Ardalis.Result.Result<int> result = await _mediator.Send(new CreateClientCommand(
                     req.FirstName!,
                     req.LastName!,
                     req.PhoneCountryCode!,

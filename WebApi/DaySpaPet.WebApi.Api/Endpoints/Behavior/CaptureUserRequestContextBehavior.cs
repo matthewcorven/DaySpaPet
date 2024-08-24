@@ -29,35 +29,35 @@ public class CaptureUserRequestContextBehavior<TRequest, TResponse>
                   RequestHandlerDelegate<TResponse> next,
                   CancellationToken cancellationToken
           ) {
-    var userUPN = _httpContextAccessor.HttpContext?.User.Identity?.Name;
-    // Guard.Against.NullOrEmpty(userUPN, "User UPN is required.");
+    string? username = _httpContextAccessor.HttpContext?.User.Identity?.Name;
+    // Guard.Against.NullOrEmpty(username, "User UPN is required.");
 
     // Access request header
-    var requestHeaders = _httpContextAccessor.HttpContext!.Request.Headers;
-    var findHeader = Constants.HttpRequestHeaderKey;
+    IHeaderDictionary requestHeaders = _httpContextAccessor.HttpContext!.Request.Headers;
+    string findHeader = Constants.HttpRequestHeaderKey;
     // Get the time zone ID from the request header
-    requestHeaders.TryGetValue(findHeader, out var timeZoneIdStringValues);
+    requestHeaders.TryGetValue(findHeader, out Microsoft.Extensions.Primitives.StringValues timeZoneIdStringValues);
     Guard.Against.Null(timeZoneIdStringValues, $"HTTP request header \"{findHeader}\" is required.");
-    var timeZoneIdValue = timeZoneIdStringValues.FirstOrDefault();
+    string? timeZoneIdValue = timeZoneIdStringValues.FirstOrDefault();
     Guard.Against.NullOrWhiteSpace(timeZoneIdValue, $"HTTP request header \"{findHeader}\" value \"{timeZoneIdValue}\" is not understood to understand a string.");
 
     // Get the current UTC time
-    var now = _clock.GetCurrentInstant();
+    Instant now = _clock.GetCurrentInstant();
     // Get the time zone from the ID
-    if (!_globalizationService.TryGetTimeZoneById(timeZoneIdValue, out var zone)) {
+    if (!_globalizationService.TryGetTimeZoneById(timeZoneIdValue, out DateTimeZone? zone)) {
       throw new InvalidTimeZoneException($"Time zone ID \"{timeZoneIdValue}\" is not a valid time zone ID.");
     }
 
     // Get the ZonedDateTime in the specified zone
-    var zonedDateTime = now.InZone(zone!);
+    ZonedDateTime zonedDateTime = now.InZone(zone!);
 
     // Convert to LocalDateTime
-    var originLocalDateTime = zonedDateTime.LocalDateTime;
-    var isDst = zonedDateTime.IsDaylightSavingTime();
+    LocalDateTime originLocalDateTime = zonedDateTime.LocalDateTime;
+    bool isDst = zonedDateTime.IsDaylightSavingTime();
 
-    var originClock = new OriginClock(originLocalDateTime, timeZoneIdValue, isDst);
+    OriginClock originClock = new OriginClock(originLocalDateTime, timeZoneIdValue, isDst);
 
-    _appUserRequestContext.Set(userUPN ?? "", [], originClock);
+    _appUserRequestContext.Set(username ?? "", [], originClock);
 
     return next();
   }
