@@ -25,7 +25,12 @@ I've tried my very best to capture here each influence this "project" has to cre
   - Ref: [Sander Ten Brinke: Taking Entity Framework Core data seeding to the next level with Bogus](https://stenbrinke.nl/blog/taking-ef-core-data-seeding-to-the-next-level-with-bogus/)
 
 ## TODO: Future Stuff
-
+- Use a custom prefix for environment variable names
+  - Ref: [.NET Configuration In Depth 4:41 | .NET Conf 2023](https://youtu.be/aOXaBZFB0-0?si=w44JE-lRpBjfb7hc&t=281)
+- Use in-memory configuration for tests 
+  - Ref: [.NET Configuration In Depth 5:01 | .NET Conf 2023](https://youtu.be/aOXaBZFB0-0?si=z7X_D-fHL8lCzsUX&t=301)
+- Provide debug view of configuration in development for anonymous users, or for authenticated users in production with the right permissions
+  - Ref: [.NET Configuration In Depth 17:34 | .NET Conf 2023](https://youtu.be/aOXaBZFB0-0?si=pTLQSbw5fPymnsMG&t=1054)
 - Serilog for things like structured logging, metrics, and traces
   - Ref: [Serilog](https://serilog.net/)
   - Ideally, in development environment:
@@ -194,12 +199,13 @@ block-beta
 
 ## Developer Quick Start
 
-1. Set environment variable in your VS/VSCode launch profiles, powershell/bash/zsh user profile, user scope, or system scope:
-	- `NETCORE_ENVIRONMENT=Development`
+1. Set environment variables in your VS/VSCode launch profiles, powershell/bash/zsh user profile, user scope, or system scope:
+	- `NETCORE_ENVIRONMENT=Development` 
+	- `ASPNETCORE_ENVIRONMENT=Development` 
 	
 	> Failure to do so will result in the app running in Production mode, which will not display detailed error messages.
 
-1. Close and re-open your terminal or VS/VSCode to ensure the environment variable is set.
+1. Close and re-open your terminals and IDEs ensure its process has the most current environment variables values.
 
 	> Failure to do so will result in the app running in Production mode, which will not display detailed error messages.
 

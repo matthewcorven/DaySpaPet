@@ -1,4 +1,4 @@
-﻿using DaySpaPet.Web.Interfaces;
+﻿using DaySpaPet.WebApp.Base.Interfaces;
 
 namespace DaySpaPet.NativePlat.Client.Services;
 

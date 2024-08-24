@@ -7,7 +7,6 @@ namespace DaySpaPet.WebApi.Core.ClientAggregate.Events;
 /// The DeleteClientService is used to dispatch this event.
 /// </summary>
 internal class ClientDeactivationRequestedEvent(int clientId, OriginClock originClock)
-		: DomainEventBase(originClock)
-{
-	public int ClientId { get; set; } = clientId;
+        : DomainEventBase(originClock) {
+    public int ClientId { get; set; } = clientId;
 }

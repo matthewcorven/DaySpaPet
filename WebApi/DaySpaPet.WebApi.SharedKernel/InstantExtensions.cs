@@ -1,4 +1,3 @@
 ﻿namespace DaySpaPet.WebApi.SharedKernel;
-internal class InstantExtensions
-{
+internal class InstantExtensions {
 }

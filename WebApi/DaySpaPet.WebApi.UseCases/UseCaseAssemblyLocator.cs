@@ -1,4 +1,3 @@
 ﻿namespace DaySpaPet.WebApi.UseCases;
-public static class UseCaseAssemblyLocator
-{
+public static class UseCaseAssemblyLocator {
 }

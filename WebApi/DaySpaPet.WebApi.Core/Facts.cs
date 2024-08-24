@@ -1,6 +1,5 @@
 ﻿namespace DaySpaPet.WebApi.Core;
 
-internal static class Facts
-{
-	public static string NotSet = "!";
+internal static class Facts {
+    public static string NotSet = "!";
 }

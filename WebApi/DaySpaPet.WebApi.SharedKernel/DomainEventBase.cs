@@ -7,14 +7,12 @@ namespace DaySpaPet.WebApi.SharedKernel;
 /// A base type for domain events. Depends on MediatR INotification.
 /// Includes DateOccurred which is set on creation.
 /// </summary>
-public abstract class DomainEventBase : INotification
-{
-	public Instant OccurredAtInstant { get; init; }
-	public OriginClock OriginClock { get; init; }
+public abstract class DomainEventBase : INotification {
+    public Instant OccurredAtInstant { get; init; }
+    public OriginClock OriginClock { get; init; }
 
-	protected DomainEventBase(OriginClock originClock)
-	{
-		OccurredAtInstant = Instant.FromDateTimeUtc(DateTime.UtcNow);
-		OriginClock = originClock;
-	}
+    protected DomainEventBase(OriginClock originClock) {
+        OccurredAtInstant = Instant.FromDateTimeUtc(DateTime.UtcNow);
+        OriginClock = originClock;
+    }
 }

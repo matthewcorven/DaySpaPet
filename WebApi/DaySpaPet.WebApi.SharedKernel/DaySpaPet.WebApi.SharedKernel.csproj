@@ -11,6 +11,7 @@
     <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="NodaTime" />
+    <PackageReference Include="Serilog" />
   </ItemGroup>
 
 </Project>

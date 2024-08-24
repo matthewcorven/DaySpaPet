@@ -1,4 +1,3 @@
 ﻿namespace DaySpaPet.WebApi.Core;
-public static class CoreAssemblyLocator
-{
+public static class CoreAssemblyLocator {
 }

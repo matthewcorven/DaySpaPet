@@ -25,15 +25,10 @@
     <PackageReference Include="Ardalis.Result" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web"/>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Emoji" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\DaySpaPet.UseCases\DaySpaPet.UseCases.csproj" />
-    <ProjectReference Include="..\DaySpaPet.Core\DaySpaPet.Core.csproj" />
   </ItemGroup>
 
 </Project>  

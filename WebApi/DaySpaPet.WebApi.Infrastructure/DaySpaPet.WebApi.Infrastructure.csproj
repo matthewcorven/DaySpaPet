@@ -15,6 +15,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" />
     <PackageReference Include="Microsoft.Extensions.Logging" />
     <PackageReference Include="NodaTime.Bogus" />
+    <PackageReference Include="Serilog" />
     <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" />
   </ItemGroup>
 

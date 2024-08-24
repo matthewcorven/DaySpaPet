@@ -14,4 +14,4 @@ namespace DaySpaPet.WebApi.UseCases.Clients.Create;
 /// <param name="EmailAddress">Required. Validated based on format and length.</param>
 /// <param name="OriginClock">Required. An instant of any locale, expressed in semantically-named properties.</param>
 public record CreateClientCommand(string FirstName, string LastName, string? PhoneCountryCode,
-		string PhoneNumber, string? PhoneExtension, string EmailAddress, OriginClock OriginClock) : ICommand<Result<int>>;
+        string PhoneNumber, string? PhoneExtension, string EmailAddress, OriginClock OriginClock) : ICommand<Result<int>>;

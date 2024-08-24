@@ -1,4 +1,3 @@
 ﻿namespace DaySpaPet.WebApi.Infrastructure;
-public static class InfrastructureAssemblyLocator
-{
+public static class InfrastructureAssemblyLocator {
 }
