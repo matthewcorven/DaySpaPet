@@ -4,12 +4,12 @@ For local development, all application configuration is maintained via
 this appsettings.json and appsettings.Development.json files, except for
 any secret values which should be stored in the User Secrets store.
 
-In production, the appsettings.json file is used and then overriden by any
+In production, the appsettings.json file is used and then override by any
 secret values stored in environment variables. 
 
 ### About .NET Configuration
 
-.NET Core/5+, confguration is loaded in this order of precendence:
+.NET Core/5+, configuration is loaded in this order of precedence:
 
 1. appsettings.json
 1. appsettings.{Environment}.json
@@ -18,9 +18,9 @@ secret values stored in environment variables.
 1. Command line arguments
 
 Once loaded, configuration values are accessible by the application via 
-the IConfiguration interface or using the Options pattern. 
+the IConfiguration interface dependency resolution, or using the Options pattern. 
 
-> Note: When storing values in environment variables, it is necessary to form the full hierarchical key name without line endings or colons. Ex: `Authentication__Schemes__Bearer__PrivateSigningKey`.
+> Note: When storing values in environment variables, it is necessary to form the full hierarchical key name without line endings or colons. i.e.: `Authentication__Schemes__Bearer__PrivateSigningKey`, `Authentication__Schemes__Bearer__PublicSigningKey`.
 
 ## Application Security
 
@@ -39,7 +39,7 @@ These keys are specific to each environment, be that a deployed container/server
 
 For this application to start and operate successfully, the following environment requirements must be met:
 
-1. A valid RSA private key and its public PEM-encoded key must be generated and stored in the environment at one of the following .NET 8 configuration locations (in this order of precendence):
+1. A valid RSA private key and its public PEM-encoded key must be generated and stored in the environment at one of the following .NET 8 configuration locations (in this order of precedence):
 
 	|Location | Purpose | May be exclusively used by<super>👮</super> | Currently used by<super>🤝</super> |
 	|-|-|-|-|
@@ -56,8 +56,8 @@ For this application to start and operate successfully, the following environmen
 
 
 ```powershell
-& .\generate_rsa_keys.ps1 -EnvironmentName Development
+.\generate_rsa_keys.ps1 -EnvironmentName Development -Force
 
 ```
 
-If the environment name provided is `Development`, the script will embed the keys in the `appsettings.Development.json` file. Otherwise, the keys will be emitted to the console as flat strings to be copied and stored as environment variables in the target environment (such as a Docker container, Azure App Service instance, Windows OS with IIS, etc.)
+If the environment name provided is `Development`, keys will be saved in .NET Secrets Manager (aka User Secrets). For all other environments, the keys will be emitted to the console as flat strings to be copied and stored as environment variables in the target environment (such as a Docker container, Azure App Service instance, Windows OS with IIS, etc.)
