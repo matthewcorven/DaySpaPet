@@ -221,4 +221,6 @@ public class AppUser : EntityBase<Guid>, IAggregateRoot {
     AppUserAssignedRoleRemovedEvent domainEvent = new(Id, Username, EmailAddress, appUserRole.Id, appUserRole.ShortName, appUserRole.LongName, originClock);
     RegisterDomainEvent(domainEvent);
   }
+
+  public void 
 }

@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace DaySpaPet.WebApi.Api.Features.Auth;
 
-public class MyTokenResponse : TokenResponse {
+public class TokenRefreshResponse : TokenResponse {
   //ideally should be using something like nodatime to convert to the local time zone of the client app
   public string AccessTokenExpiry => AccessExpiry.ToLocalTime().ToString(CultureInfo.InvariantCulture);
 

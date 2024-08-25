@@ -4,7 +4,8 @@
         "Ardalis",
         "Mediat",
         "Noda",
-        "Serilog"
+        "Serilog",
+        "Tzdb"
     ],
     "disable-copilot-comment-completions.globPatternRules": [
         "**/COMMIT_EDITMSG"

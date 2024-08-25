@@ -180,4 +180,8 @@ internal class DaySpaUserAuthenticationService : IAppUserAuthenticationService {
     // Convert to a base64 string or hex string as needed
     return Convert.ToBase64String(hashBytes);
   }
+
+  public ValueTask<UserCredentialsValidationResult> TryValidateUserRefreshTokenAsync(Guid UserId, string RefreshToken, Instant ExpiryDate, CancellationToken ct) {
+    throw new NotImplementedException();
+  }
 }

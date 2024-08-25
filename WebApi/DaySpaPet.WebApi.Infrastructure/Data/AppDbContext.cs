@@ -20,6 +20,7 @@ public partial class AppDbContext : DbContext {
   public DbSet<AppUser> AppUsers => Set<AppUser>();
   public DbSet<AppUserRole> AppUserRoles => Set<AppUserRole>();
   public DbSet<AppUserAssignedRole> AppUserAssignedRoles => Set<AppUserAssignedRole>();
+  public DbSet<AppUserRefreshToken> AppUserRefreshTokens => Set<AppUserRefreshToken>();
   public DbSet<Client> Clients => Set<Client>();
   public DbSet<Pet> Pets => Set<Pet>();
 
