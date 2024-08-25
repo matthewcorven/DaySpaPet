@@ -134,8 +134,8 @@ public class Pet : EntityBase, IAggregateRoot {
     Guard.Against.Null(newNote, nameof(newNote));
     _notes.Add(newNote);
 
-    NewNoteAddedEvent newNoteAddedEvent = new NewNoteAddedEvent(this, newNote, originClock);
-    base.RegisterDomainEvent(newNoteAddedEvent);
+    NewNoteAddedEvent newNoteAddedEvent = new(ClientId, Id, Name, Type, Breed, Status, newNote.Text, newNote.IsAlert, originClock);
+    RegisterDomainEvent(newNoteAddedEvent);
   }
 
 }

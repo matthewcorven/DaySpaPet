@@ -1,12 +1,8 @@
 ﻿using Ardalis.GuardClauses;
-using DaySpaPet.WebApi.Core.ClientAggregate;
-using DaySpaPet.WebApi.Core.ClientAggregate.Events;
-using DaySpaPet.WebApi.Core.PetAggregate;
+using DaySpaPet.WebApi.Core.AppUserAggregate.Events;
 using DaySpaPet.WebApi.SharedKernel;
 using DaySpaPet.WebApi.SharedKernel.GuardClauses;
 using NodaTime;
-using System.Net.Mail;
-using System;
 
 namespace DaySpaPet.WebApi.Core.AppUserAggregate;
 
@@ -79,6 +75,7 @@ public class AppUser : EntityBase<Guid>, IAggregateRoot {
         ,string? countryCode
         ,Guid? administratorId
         ,OriginClock originClock) {
+    Id = Guid.NewGuid();
     PasswordHash = Guard.Against.NullOrEmpty(passwordHash, nameof(passwordHash));
     PasswordSalt = Guard.Against.NullOrEmpty(passwordSalt, nameof(passwordSalt));
     HashingAlgorithm = Guard.Against.NullOrEmpty(hashingAlgorithm, nameof(hashingAlgorithm));
@@ -109,7 +106,12 @@ public class AppUser : EntityBase<Guid>, IAggregateRoot {
 
     SetCreatedAt(originClock);
 
-    AppUserCreateEvent domainEvent = new AppUserCreateEvent(this, originClock);
+    AppUserCreatedEvent domainEvent = new(
+      Id,
+      Username, EmailAddress, 
+      TimeZoneId, Locale, Currency, 
+      FirstName, LastName, MiddleName,
+      DateOfBirth, ProfileImageUrl, PhoneNumber, AddressLine1, AddressLine2, City, State, PostalCode, CountryCode, AdministratorId, originClock);
     RegisterDomainEvent(domainEvent);
   }
 
@@ -123,12 +125,20 @@ public class AppUser : EntityBase<Guid>, IAggregateRoot {
       MiddleName = newMiddleName!;
     }
 
-    AppUserNameUpdatedEvent domainEvent = new AppUserNameUpdatedEvent(this, newFirstName, newLastName, newMiddleName, oldFirstName, oldLastName, oldMiddleName, originClock);
+    SetModifiedAt(originClock);
+
+    AppUserNameUpdatedEvent domainEvent = new(Id, Username, EmailAddress, newFirstName, newLastName, newMiddleName, oldFirstName, oldLastName, oldMiddleName, originClock);
     RegisterDomainEvent(domainEvent);
   }
 
-  public void UpdatePhone(string? phoneCountryCode, string phoneNumber, string? phoneExtension) {
-    PhoneNumber = Guard.Against.NullOrEmpty(phoneNumber, nameof(phoneNumber)).Trim();
+  public void UpdatePhone(string newPhoneNumber, OriginClock originClock) {
+    string oldPhoneNumber = newPhoneNumber;
+    PhoneNumber = Guard.Against.NullOrEmpty(newPhoneNumber, nameof(newPhoneNumber)).Trim();
+
+    SetModifiedAt(originClock);
+
+    AppUserPhoneUpdatedEvent domainEvent = new(Id, Username, EmailAddress, newPhoneNumber, oldPhoneNumber, originClock);
+    RegisterDomainEvent(domainEvent);
   }
 
   public void UpdateRegionalInformation(string newTimeZoneId, string newLocale, string newCurrency, OriginClock originClock) {
@@ -139,11 +149,13 @@ public class AppUser : EntityBase<Guid>, IAggregateRoot {
     Locale = Guard.Against.NullOrEmpty(newLocale, nameof(newLocale)).Trim();
     Currency = Guard.Against.NullOrEmpty(newCurrency, nameof(newCurrency)).Trim();
 
-    AppUserLocationUpdatedEvent domainEvent = new AppUserLocationUpdatedEvent(this, newTimeZoneId, newLocale, newCurrency, oldTimeZoneId, oldLocale, oldCurrency, originClock);
+    SetModifiedAt(originClock);
+
+    AppUserLocationUpdatedEvent domainEvent = new AppUserLocationUpdatedEvent(Id, Username, EmailAddress, newTimeZoneId, newLocale, newCurrency, oldTimeZoneId, oldLocale, oldCurrency, originClock);
     RegisterDomainEvent(domainEvent);
   }
 
-  public void UpdateAddress(string? addressLine1, string? addressLine2, string? city, string? state, string? postalCode, string? countryCode, OriginClock originClock) {
+  public void UpdateAddress(string? newAddressLine1, string? newAddressLine2, string? newCity, string? newState, string? newPostalCode, string? newCountryCode, OriginClock originClock) {
     string? oldAddressLine1 = AddressLine1;
     string? oldAddressLine2 = AddressLine2;
     string? oldCity = City;
@@ -151,14 +163,16 @@ public class AppUser : EntityBase<Guid>, IAggregateRoot {
     string? oldPostalCode = PostalCode;
     string? oldCountryCode = CountryCode;
 
-    AddressLine1 = addressLine1?.Trim();
-    AddressLine2 = addressLine2?.Trim();
-    City = city?.Trim();
-    State = state?.Trim();
-    PostalCode = postalCode?.Trim();
-    CountryCode = countryCode?.Trim();
+    AddressLine1 = newAddressLine1?.Trim();
+    AddressLine2 = newAddressLine2?.Trim();
+    City = newCity?.Trim();
+    State = newState?.Trim();
+    PostalCode = newPostalCode?.Trim();
+    CountryCode = newCountryCode?.Trim();
 
-    AppUserAddressUpdatedEvent domainEvent = new AppUserAddressUpdatedEvent(this, addressLine1, addressLine2, city, state, postalCode, countryCode, oldAddressLine1, oldAddressLine2, oldCity, oldState, oldPostalCode, oldCountryCode, originClock);
+    SetModifiedAt(originClock);
+
+    AppUserAddressUpdatedEvent domainEvent = new(Id, Username, EmailAddress, newAddressLine1, newAddressLine2, newCity, newState, newPostalCode, newCountryCode, oldAddressLine1, oldAddressLine2, oldCity, oldState, oldPostalCode, oldCountryCode, originClock);
     RegisterDomainEvent(domainEvent);
   }
 
@@ -168,36 +182,43 @@ public class AppUser : EntityBase<Guid>, IAggregateRoot {
 
     EmailAddress = Guard.Against.EmailInvalid(newEmailAddress.Trim());
 
-    AppUserEmailAddressUpdatedEvent domainEvent = new AppUserEmailAddressUpdatedEvent(this, newEmailAddress, oldEmailAddress, originClock);
+    SetModifiedAt(originClock);
+
+    AppUserEmailAddressUpdatedEvent domainEvent = new(Id, Username, EmailAddress, newEmailAddress, oldEmailAddress, originClock);
     RegisterDomainEvent(domainEvent);
   }
 
   public void GrantAdministrativeAccess(OriginClock originClock) {
     AdministratorId = Guid.NewGuid();
 
-    AppUserGrantedAdministrativeAccessEvent domainEvent = new AppUserGrantedAdministrativeAccessEvent(this, administratorId, originClock);
+    SetModifiedAt(originClock);
+
+    AppUserGrantedAdministrativeAccessEvent domainEvent = new(Id, Username, EmailAddress, AdministratorId!.Value, originClock);
     RegisterDomainEvent(domainEvent);
   }
 
   public void AddAppUserRole(AppUserRole appUserRole,
           OriginClock originClock) {
-    AppUserAssignedRole auar = new (this.Id, appUserRole.Id, originClock);
+    AppUserAssignedRole auar = new (Id, appUserRole.Id, originClock);
     _userRoles.Add(auar);
 
-    AppUserAssignedRoleCreatedEvent domainEvent = new AppUserAssignedRoleCreatedEvent(this, appUserRole.Id, appUserRole.ShortName, appUserRole.LongName, originClock);
+    SetModifiedAt(originClock);
+
+    AppUserAssignedRoleCreatedEvent domainEvent = new(Id, Username, EmailAddress, appUserRole.Id, appUserRole.ShortName, appUserRole.LongName, originClock);
     RegisterDomainEvent(domainEvent);
   }
 
   public void RemoveAppUserRole(AppUserRole appUserRole,
           OriginClock originClock) {
-    AppUserAssignedRole? auar = _userRoles.SingleOrDefault(r => r.AppUserId == this.Id && r.AppUserRoleId == appUserRole.Id);
-    if (auar is null) {
-      throw new InvalidOperationException("User does not have the specified role.");
-    }
+    AppUserAssignedRole? auar = _userRoles
+        .SingleOrDefault(r => r.AppUserId == Id && r.AppUserRoleId == appUserRole.Id) 
+      ?? throw new InvalidOperationException("User does not have the specified role.");
 
     _userRoles.Remove(auar);
 
-    AppUserAssignedRoleRemovedEvent domainEvent = new AppUserAssignedRoleRemovedEvent(this, appUserRole.Id, appUserRole.ShortName, appUserRole.LongName, originClock);
+    SetModifiedAt(originClock);
+
+    AppUserAssignedRoleRemovedEvent domainEvent = new(Id, Username, EmailAddress, appUserRole.Id, appUserRole.ShortName, appUserRole.LongName, originClock);
     RegisterDomainEvent(domainEvent);
   }
 }

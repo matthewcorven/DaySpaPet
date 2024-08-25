@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace DaySpaPet.WebApi.Api.Clients;
+namespace DaySpaPet.WebApi.Api.Endpoints.Clients;
 
 public record CreateClientRequest {
   public const string Route = "/Clients";

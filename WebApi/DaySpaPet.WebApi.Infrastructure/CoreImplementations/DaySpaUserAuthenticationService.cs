@@ -25,7 +25,7 @@ internal class DaySpaUserAuthenticationService : IAppUserAuthenticationService {
     _appDbContext = appDbContext;
   }
 
-  public async ValueTask<(bool Validated, AuthenticatedAppUser? AuthenticatedAppUser)> TryValidateUserCredentialsAsync(string StatedEmailAddress, string StatedPassword, CancellationToken ct) {
+  public async ValueTask<UserCredentialsValidationResult> TryValidateUserCredentialsAsync(string StatedEmailAddress, string StatedPassword, CancellationToken ct) {
     
 
     // Retrieve required configuration values with logging if not found
@@ -36,7 +36,7 @@ internal class DaySpaUserAuthenticationService : IAppUserAuthenticationService {
         !authSchemeBearer.TryGetRequiredConfiguration(_logger, "ValidIssuer", out string? jwtIssuer) ||
         !authSchemeBearer.TryGetRequiredConfiguration(_logger, "ValidAudiences", out string? jwtAudiences) ||
         !authSchemeBearer.TryGetRequiredConfiguration<int?>(_logger, "TokenExpirationSeconds", out int? tokenExpirationSeconds)) {
-      return (false, null);
+      return new UserCredentialsValidationResult(false, null);
     }
 
     // Validate user by email and password with row-level hashing algorithm & password salt. 
@@ -67,7 +67,7 @@ internal class DaySpaUserAuthenticationService : IAppUserAuthenticationService {
       """, StatedEmailAddress, StatedPassword).SingleOrDefaultAsync(cancellationToken: ct);
     if (dbAppUser is null) {
       // TODO: Logging?
-      return (false, null);
+      return new UserCredentialsValidationResult(false, null);
     }
 
     // Step 2: Compute the hash using C# code based on retrieved hashing algorithm and salt
@@ -75,7 +75,7 @@ internal class DaySpaUserAuthenticationService : IAppUserAuthenticationService {
 
     if (computedHash != dbAppUser.PasswordHash) {
       // Password is invalid!
-      return (false, null);
+      return new UserCredentialsValidationResult(false, null);
     }
 
     List<AssignedUserRolePublicView> userRoles
@@ -160,7 +160,7 @@ internal class DaySpaUserAuthenticationService : IAppUserAuthenticationService {
       Roles = userRoles,
       Claims = userClaims
     };
-    return (true, appUser);
+    return new UserCredentialsValidationResult(true, appUser);
   }
 
   private static string ComputeHash(string hashingAlgorithmName, string password, string salt) {

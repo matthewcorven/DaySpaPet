@@ -2,7 +2,7 @@
 using FastEndpoints;
 using FluentValidation;
 
-namespace DaySpaPet.WebApi.Api.Clients;
+namespace DaySpaPet.WebApi.Api.Endpoints.Clients;
 
 /// <summary>
 /// See: https://fast-endpoints.com/docs/validation

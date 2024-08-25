@@ -30,7 +30,7 @@ public class DeactivateClientService : IDeactivateClientService {
     // TODO: Kick off a saga that will handle the deactivation spanning any business steps
     // ultimately culminating in the ClientDeactivatedEvent being published and the
     // client being marked as inactive.
-    client.UpdateStatus(ClientAccountStatus.Deactive);
+    client.UpdateStatus(ClientAccountStatus.Deactive, originClock);
     await _repository.UpdateAsync(client);
 
     ClientDeactivationRequestedEvent domainEvent = new ClientDeactivationRequestedEvent(clientId, originClock);

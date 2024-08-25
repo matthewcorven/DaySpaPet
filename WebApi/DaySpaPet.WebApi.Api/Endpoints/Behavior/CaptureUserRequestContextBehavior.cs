@@ -34,7 +34,7 @@ public class CaptureUserRequestContextBehavior<TRequest, TResponse>
 
     // Access request header
     IHeaderDictionary requestHeaders = _httpContextAccessor.HttpContext!.Request.Headers;
-    string findHeader = Constants.HttpRequestHeaderKey;
+    string findHeader = Constants.HttpRequestHeader_Origin_TimeZoneId;
     // Get the time zone ID from the request header
     requestHeaders.TryGetValue(findHeader, out Microsoft.Extensions.Primitives.StringValues timeZoneIdStringValues);
     Guard.Against.Null(timeZoneIdStringValues, $"HTTP request header \"{findHeader}\" is required.");
@@ -55,7 +55,7 @@ public class CaptureUserRequestContextBehavior<TRequest, TResponse>
     LocalDateTime originLocalDateTime = zonedDateTime.LocalDateTime;
     bool isDst = zonedDateTime.IsDaylightSavingTime();
 
-    OriginClock originClock = new OriginClock(originLocalDateTime, timeZoneIdValue, isDst);
+    OriginClock originClock = new(originLocalDateTime, timeZoneIdValue, isDst);
 
     _appUserRequestContext.Set(username ?? "", [], originClock);
 

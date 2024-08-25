@@ -42,7 +42,7 @@ public class Client : EntityBase, IAggregateRoot {
     Status = ClientAccountStatus.New;
     EmailAddress = Guard.Against.EmailInvalid(Guard.Against.NullOrEmpty(emailAddress, nameof(emailAddress)));
 
-    this.SetCreatedAt(originClock);
+    SetCreatedAt(originClock);
   }
 
   public void UpdateName(string newFirstName, string newLastName, OriginClock originClock) {
@@ -51,14 +51,18 @@ public class Client : EntityBase, IAggregateRoot {
     FirstName = Guard.Against.NullOrEmpty(newFirstName, nameof(newFirstName)).Trim();
     LastName = Guard.Against.NullOrEmpty(newLastName, nameof(newLastName)).Trim();
 
-    ClientNameUpdatedEvent domainEvent = new ClientNameUpdatedEvent(this, newFirstName, newLastName, oldFirstName, oldLastName, originClock);
-    base.RegisterDomainEvent(domainEvent);
+    SetModifiedAt(originClock);
+
+    ClientNameUpdatedEvent domainEvent = new(Id, newFirstName, newLastName, oldFirstName, oldLastName, originClock);
+    RegisterDomainEvent(domainEvent);
   }
 
-  public void UpdatePhone(string? phoneCountryCode, string phoneNumber, string? phoneExtension) {
+  public void UpdatePhone(string? phoneCountryCode, string phoneNumber, string? phoneExtension, OriginClock originClock) {
     PhoneCountryCode = phoneCountryCode ?? Defaults.DefaultPhoneCountryCode;
     PhoneNumber = Guard.Against.NullOrEmpty(phoneNumber, nameof(phoneNumber)).Trim();
     PhoneExtension = phoneExtension ?? null;
+
+    SetModifiedAt(originClock);
   }
 
   public void UpdateEmailAddress(string newEmailAddress, OriginClock originClock) {
@@ -67,12 +71,16 @@ public class Client : EntityBase, IAggregateRoot {
 
     EmailAddress = Guard.Against.EmailInvalid(newEmailAddress.Trim());
 
-    ClientEmailAddressUpdatedEvent domainEvent = new ClientEmailAddressUpdatedEvent(this, newEmailAddress, oldEmailAddress, originClock);
-    base.RegisterDomainEvent(domainEvent);
+    SetModifiedAt(originClock);
+
+    ClientEmailAddressUpdatedEvent domainEvent = new(Id, newEmailAddress, oldEmailAddress, originClock);
+    RegisterDomainEvent(domainEvent);
   }
 
-  public void UpdateStatus(ClientAccountStatus newStatus) {
+  public void UpdateStatus(ClientAccountStatus newStatus, OriginClock originClock) {
     Status = Guard.Against.NullOrInvalidInput(newStatus, nameof(newStatus), ClientAccountStatus.IsNotSet);
+  
+    SetModifiedAt(originClock);
   }
 
   public void AddPet(string newPetName, AnimalType newAnimalType, string newPetBreed,
@@ -82,7 +90,9 @@ public class Client : EntityBase, IAggregateRoot {
     Guard.Against.NullOrInvalidInput(newAnimalType, nameof(newAnimalType), AnimalType.IsNotSet);
     Guard.Against.NullOrEmpty(newPetBreed, nameof(newPetBreed));
 
-    Pet pet = new Pet(clientId: this.Id, newPetName, newAnimalType, newPetBreed, originClock, optionalNewPetData);
+    SetModifiedAt(originClock);
+
+    Pet pet = new(clientId: Id, newPetName, newAnimalType, newPetBreed, originClock, optionalNewPetData);
     _pets.Add(pet);
   }
 }

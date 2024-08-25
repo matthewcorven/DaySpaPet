@@ -1,5 +1,4 @@
-﻿using DaySpaPet.WebApi.Api.Clients;
-using DaySpaPet.WebApi.Core.Interfaces;
+﻿using DaySpaPet.WebApi.Core.Interfaces;
 using DaySpaPet.WebApi.SharedKernel;
 using DaySpaPet.WebApi.UseCases.Clients.Create;
 using FastEndpoints;

@@ -17,9 +17,7 @@ internal class FakeDaySpaUserAuthenticationService : IAppUserAuthenticationServi
     _logger = logger;
   }
 
-  public ValueTask<bool> TryValidateUserCredentialsAsync(string EmailAddress, string Password, CancellationToken ct, out AuthenticatedAppUser? appUser) {
-    appUser = null;
-
+  public ValueTask<UserCredentialsValidationResult> TryValidateUserCredentialsAsync(string StatedEmailAddress, string StatedPassword, CancellationToken ct) {
     // Retrieve required configuration values with logging if not found
     IConfigurationSection authSchemeBearer = _config.GetRequiredSection("Authentication:Schemes:Bearer");
 
@@ -27,18 +25,34 @@ internal class FakeDaySpaUserAuthenticationService : IAppUserAuthenticationServi
         !authSchemeBearer.TryGetRequiredConfiguration(_logger, "PrivateSigningKey", out string? jwtPrivateSigningKey) ||
         !authSchemeBearer.TryGetRequiredConfiguration(_logger, "ValidIssuer", out string? jwtIssuer) ||
         !authSchemeBearer.TryGetRequiredConfiguration(_logger, "ValidAudiences", out string? jwtAudiences) ||
-        !authSchemeBearer.TryGetRequiredConfiguration(_logger, "TokenExpirationSeconds", out string? tokenExpirationSeconds)) {
-      return ValueTask.FromResult(false);
+        !authSchemeBearer.TryGetRequiredConfiguration<int?>(_logger, "TokenExpirationSeconds", out int? tokenExpirationSeconds)) {
+      return ValueTask.FromResult(new UserCredentialsValidationResult(false, null));
     }
 
-    string userId = "c3d20521-0f33-491d-8a68-c6bc7a1159d3";
-    string adminId = "57a791d6-10e1-4453-a295-f53147959152";
-    string[] userRoles = ["Manager", "Administrator"];
-    Dictionary<string, string> userClaims = new() {
-      { "AdministratorID", adminId },
-      { "Username", EmailAddress },
-      { "UserID", userId },
-    };
+    List<AssignedUserRolePublicView> userRoles = [];
+    List<UserClaimPublicView> userClaims = [];
+
+    userRoles.Add(new AssignedUserRolePublicView("Admin", "Administrator"));
+    userRoles.Add(new AssignedUserRolePublicView("Admin", "Administrator"));
+    userClaims.Add(new("AdminstratorId", Guid.NewGuid().ToString()));
+    userClaims.Add(new("Username", "admin@dayspapet.local"));
+    userClaims.Add(new("EmailAddress", "admin@dayspapet.local"));
+    userClaims.Add(new("TimeZoneId", "America/New_York"));
+    userClaims.Add(new("Locale", "en-US"));
+    userClaims.Add(new("Currency", "USD"));
+    userClaims.Add(new("FirstName", "Mike"));
+    userClaims.Add(new("LastName", "Smith"));
+    userClaims.Add(new("MiddleName", "D"));
+    userClaims.Add(new("DateOfBirth", new AnnualDate(11, 2).ToString()));
+    userClaims.Add(new("ProfileImageUrl", "https://placehold.co/200x200"));
+    userClaims.Add(new("PhoneNumber", "+18885551212"));
+    userClaims.Add(new("AddressLine1", "123 Main Street"));
+    userClaims.Add(new("AddressLine2", "Suite 100"));
+    userClaims.Add(new("City", "Hometown"));
+    userClaims.Add(new("State", "MI"));
+    userClaims.Add(new("PostalCode", "48312"));
+    userClaims.Add(new("CountryCode", "USA"));
+    
     Instant tokenExpiresAtUtc = Instant.FromDateTimeUtc(DateTime.UtcNow.AddDays(1));
 
     string jwtToken = JwtBearer.CreateToken(
@@ -51,37 +65,21 @@ internal class FakeDaySpaUserAuthenticationService : IAppUserAuthenticationServi
               o.Issuer = jwtIssuer!;
               o.Audience = jwtAudiences!; // Hmm. Need to set this based on request? Or instead derive audience from user?
               o.ExpireAt = tokenExpiresAtUtc.ToDateTimeUtc();
-              foreach (string item in userRoles) {
-                o.User.Roles.Add(item);
+              foreach (AssignedUserRolePublicView ur in userRoles) {
+                o.User.Roles.Add(ur.ShortName);
               }
-              foreach (KeyValuePair<string, string> item in userClaims) {
+              foreach (UserClaimPublicView item in userClaims) {
                 //o.User.Claims.Add((item.Key, item.Value));
                 o.User[item.Key] = item.Value;
               }
             });
 
-    appUser = new AuthenticatedAppUser() {
+    AuthenticatedAppUser appUser = new() {
       Token = jwtToken,
       TokenExpiresAtUtc = tokenExpiresAtUtc,
-      Username = EmailAddress,
-      EmailAddress = EmailAddress,
-      TimeZoneId = NodaTime.TimeZones.TzdbDateTimeZoneSource.Default.ForId("America/New_York").Id,
-      Locale = "en-US",
-      Currency = "USD",
-      FirstName = "John",
-      MiddleName = "Q",
-      LastName = "Doe",
-      DateOfBirth = new AnnualDate(2000, 15),
-      ProfileImageUrl = "https://placehold.co/100x100",
-      PhoneNumber = "+15555555555",
-      AddressLine1 = "123 Main St",
-      AddressLine2 = "Apt 1",
-      City = "Anytown",
-      State = "NY",
-      PostalCode = "12992",
-      CountryCode = "USA"
+      Roles = userRoles,
+      Claims = userClaims
     };
-
-    return ValueTask.FromResult(true);
+    return ValueTask.FromResult(new UserCredentialsValidationResult(true, appUser));
   }
 }
