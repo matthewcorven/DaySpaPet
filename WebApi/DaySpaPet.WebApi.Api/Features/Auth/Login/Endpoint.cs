@@ -18,10 +18,7 @@ public class UserLogin : Endpoint<LoginRequest, MyTokenResponse> {
     UserCredentialsValidationResult validationResult = await UserAuthenticationService.TryValidateUserCredentialsAsync(req.Email, req.Password, ct);
 
     if (validationResult.Validated && validationResult.AuthenticatedAppUser is not null) {
-      Response = await CreateTokenWith<UserTokenService>(userID, p => {
-        p.Claims.Add(new("UserID", userID));
-        p.Permissions.AddRange(new Allow().AllCodes());
-      });
+      await SendAsync(validationResult.AuthenticatedAppUser!.Value.Token, cancellation: ct);
     } else
       ThrowError("The supplied credentials are invalid!", StatusCodes.Status401Unauthorized);
   }

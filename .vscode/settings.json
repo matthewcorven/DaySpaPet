@@ -3,7 +3,8 @@
         "appsettings",
         "Ardalis",
         "Mediat",
-        "Noda"
+        "Noda",
+        "Serilog"
     ],
     "disable-copilot-comment-completions.globPatternRules": [
         "**/COMMIT_EDITMSG"
@@ -13,5 +14,6 @@
         "titleBar.activeBackground": "#333065",
         "titleBar.activeForeground": "#FCFCFE"
     },
+    "github.copilot.editor.enableAutoCompletions": true,
     "github.copilot.inlineSuggest.enable": true,
 }

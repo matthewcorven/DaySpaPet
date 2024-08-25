@@ -1,6 +1,8 @@
 ﻿using Ardalis.Result;
 using DaySpaPet.WebApi.Core.ClientAggregate;
+using DaySpaPet.WebApi.Core.ClientAggregate.Specifications;
 using DaySpaPet.WebApi.SharedKernel;
+using EntityFramework.Exceptions.Common;
 
 namespace DaySpaPet.WebApi.UseCases.Clients.Create;
 
@@ -14,7 +16,11 @@ public sealed class CreateClientHandler : ICommandHandler<CreateClientCommand, R
 
   public async Task<Result<int>> Handle(CreateClientCommand request,
           CancellationToken cancellationToken) {
-    Client newClient = new Client(
+    if (await _repository.SingleOrDefaultAsync(new ClientByEmailAddressSpec(request.EmailAddress), cancellationToken) != null) {
+      return Result<int>.Conflict("Client with this email address already exists");
+    }
+
+    Client newClient = new(
             request.FirstName,
             request.LastName,
             request.PhoneCountryCode,
@@ -22,8 +28,12 @@ public sealed class CreateClientHandler : ICommandHandler<CreateClientCommand, R
             request.PhoneExtension,
             request.EmailAddress,
             request.OriginClock);
-    Client createdItem = await _repository.AddAsync(newClient, cancellationToken);
 
-    return createdItem.Id;
+    try {
+      Client createdItem = await _repository.AddAsync(newClient, cancellationToken);
+      return createdItem.Id;
+    } catch (UniqueConstraintException) {
+      return Result<int>.Conflict("Client with this email address already exists");
+    }
   }
 }

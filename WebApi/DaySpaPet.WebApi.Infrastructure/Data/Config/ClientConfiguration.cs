@@ -7,6 +7,7 @@ namespace DaySpaPet.Infrastructure.Data.Config;
 public sealed class ClientConfiguration : IEntityTypeConfiguration<Client> {
   public void Configure(EntityTypeBuilder<Client> builder) {
     builder.HasKey(c => c.Id);
+    builder.HasIndex(u => u.EmailAddress).IsUnique();
     builder.Property(c => c.FirstName)
             .HasMaxLength(DataSchemaConstants.DEFAULT_NAME_LENGTH)
             .IsRequired();

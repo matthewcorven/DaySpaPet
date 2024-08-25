@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" />
     <PackageReference Include="Bogus" />
+    <PackageReference Include="EntityFrameworkCore.Exceptions.SqlServer" />
     <PackageReference Include="FastEndpoints.Security" />
     <PackageReference Include="MailKit" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />

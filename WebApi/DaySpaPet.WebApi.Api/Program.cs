@@ -28,7 +28,7 @@ try {
 
 	WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 	builder.Services.AddSerilog((services, lc) => lc
-					// Some additional configuration in addition to that of already boostrapped logger.
+					// Some additional configuration in addition to that of already bootstrapped logger.
 					.ReadFrom.Configuration(builder.Configuration)
 					.ReadFrom.Services(services));
 
@@ -66,28 +66,27 @@ try {
 								 jwtBearerOptions.TokenValidationParameters.ValidateLifetime = true;
 								 jwtBearerOptions.TokenValidationParameters.ValidateIssuerSigningKey = true;
 								 jwtBearerOptions.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtPrivateSigningKey!));
-							 });
-	builder.Services.AddAuthorization(options => {
-		options.AddPolicy("AdministratorsOnly", x => x
+							 }).AddAuthorizationBuilder()
+    .AddPolicy("AdministratorsOnly", x => x
 						.RequireRole("Administrator")
 						.RequireClaim("AdministratorID")
 						.RequireClaim("Username")
-						.RequireClaim("UserID"));
-		options.AddPolicy("ManagersOnly", x => x
+						.RequireClaim("UserID"))
+    .AddPolicy("ManagersOnly", x => x
 						.RequireRole("Manager")
 						.RequireClaim("ManagerID")
 						.RequireClaim("Username")
-						.RequireClaim("UserID"));
-		options.AddPolicy("EmployeeID", x => x
+						.RequireClaim("UserID"))
+    .AddPolicy("EmployeeID", x => x
 						.RequireRole("Employee")
 						.RequireClaim("EmployeeID")
 						.RequireClaim("UserID"));
-	});
 	builder.Services.AddFastEndpoints();
 	// builder.Services.AddFastEndpointsApiExplorer();
 	builder.Services.SwaggerDocument(o => {
 		o.ShortSchemaNames = true;
-		o.DocumentSettings = s => s.OperationProcessors.Add(new AddRequestOriginClockTimeZoneId(_ => _.Strict = true));
+    o.AutoTagPathSegmentIndex = 2;
+    o.DocumentSettings = s => s.OperationProcessors.Add(new AddRequestOriginClockTimeZoneId(_ => _.Strict = true));
 	});
 
 	//builder.Services.AddSwaggerGen(c =>
@@ -146,10 +145,10 @@ public partial class Program {
 	static void ConfigureMediatR(WebApplicationBuilder builder) {
 		Assembly?[] mediatRAssemblies =
 		[
-								Assembly.GetAssembly(typeof(CoreAssemblyLocator)),
-								Assembly.GetAssembly(typeof(UseCaseAssemblyLocator)),
-								Assembly.GetAssembly(typeof(InfrastructureAssemblyLocator))
-				];
+			Assembly.GetAssembly(typeof(CoreAssemblyLocator)),
+			Assembly.GetAssembly(typeof(UseCaseAssemblyLocator)),
+			Assembly.GetAssembly(typeof(InfrastructureAssemblyLocator))
+		];
 
 		builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(mediatRAssemblies!));
 		builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CaptureUserRequestContextBehavior<,>));
@@ -195,31 +194,29 @@ public partial class Program {
 	static Serilog.Extensions.Hosting.ReloadableLogger GenerateBootstrappedLogger() {
 		Serilog.Extensions.Hosting.ReloadableLogger logger = new LoggerConfiguration()
 #if DEBUG
-						.WriteTo.Console(new ExpressionTemplate(
-						// Include trace and span ids when present.
-						"[{@t:HH:mm:ss} {@l:u3}{#if @tr is not null} ({substring(@tr,0,4)}:{substring(@sp,0,4)}){#end}] {@m}\n{@x}",
-						theme: TemplateTheme.Code))
-						.WriteTo.File(
-										path: "logs/log-debug.txt",
-										rollingInterval: RollingInterval.Hour,
-										rollOnFileSizeLimit: true, formatter: new ExpressionTemplate(
-														// Include trace and span ids when present.
-														"[{@t:HH:mm:ss} {@l:u3}{#if @tr is not null} ({substring(@tr,0,4)}:{substring(@sp,0,4)}){#end}] {@m}\n{@x}",
-														theme: TemplateTheme.Code, formatProvider: new CultureInfo("en-US")
-										)
-						)
-#else
-						.MinimumLevel.Information()
-#endif
-						// https://github.com/serilog/serilog-sinks-opentelemetry
-						.WriteTo.OpenTelemetry(options => {
-							options.Endpoint = "http://localhost:4317/v1/logs";
-							options.Protocol = OtlpProtocol.Grpc;
-							options.ResourceAttributes = new Dictionary<string, object> {
-								["service.name"] = "dayspa-pet--web-api--api"
-							};
-						})
-						.CreateBootstrapLogger();
+			.WriteTo.Console(new ExpressionTemplate(
+			// Include trace and span ids when present.
+			"[{@t:HH:mm:ss} {@l:u3}{#if @tr is not null} ({substring(@tr,0,4)}:{substring(@sp,0,4)}){#end}] {@m}\n{@x}",
+			theme: TemplateTheme.Code))
+			.WriteTo.File(
+							path: "logs/log-debug.txt",
+							rollingInterval: RollingInterval.Hour,
+							rollOnFileSizeLimit: true, formatter: new ExpressionTemplate(
+											// Include trace and span ids when present.
+											"[{@t:HH:mm:ss} {@l:u3}{#if @tr is not null} ({substring(@tr,0,4)}:{substring(@sp,0,4)}){#end}] {@m}\n{@x}",
+											theme: TemplateTheme.Code, formatProvider: new CultureInfo("en-US")
+							)
+			)
+	#endif
+			// https://github.com/serilog/serilog-sinks-opentelemetry
+			.WriteTo.OpenTelemetry(options => {
+				options.Endpoint = "http://localhost:4317/v1/logs";
+				options.Protocol = OtlpProtocol.Grpc;
+				options.ResourceAttributes = new Dictionary<string, object> {
+					["service.name"] = "dayspa-pet--web-api--api"
+				};
+			})
+			.CreateBootstrapLogger();
 		return logger;
 	}
 }

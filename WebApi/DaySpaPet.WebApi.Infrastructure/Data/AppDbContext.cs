@@ -2,6 +2,7 @@
 using DaySpaPet.WebApi.Core.ClientAggregate;
 using DaySpaPet.WebApi.Core.PetAggregate;
 using DaySpaPet.WebApi.SharedKernel;
+using EntityFramework.Exceptions.SqlServer;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -29,6 +30,10 @@ public partial class AppDbContext : DbContext {
 #if DEBUG
     SetupSeedData(modelBuilder);
 #endif
+  }
+
+  protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
+    optionsBuilder.UseExceptionProcessor();
   }
 
   private static void SetupSeedData(ModelBuilder modelBuilder) {
