@@ -26,75 +26,100 @@ internal class DaySpaUserAuthenticationService : IAppUserAuthenticationService {
   }
 
   public async ValueTask<UserCredentialsValidationResult> TryValidateUserCredentialsAsync(string StatedEmailAddress, string StatedPassword, CancellationToken ct) {
-    
-
-    // Retrieve required configuration values with logging if not found
-    IConfigurationSection authSchemeBearer = _config.GetRequiredSection("Authentication:Schemes:Bearer");
-
-    if (!authSchemeBearer.TryGetRequiredConfiguration(_logger, "PublicSigningKey", out string? jwtPublicSigningKey) ||
-        !authSchemeBearer.TryGetRequiredConfiguration(_logger, "PrivateSigningKey", out string? jwtPrivateSigningKey) ||
-        !authSchemeBearer.TryGetRequiredConfiguration(_logger, "ValidIssuer", out string? jwtIssuer) ||
-        !authSchemeBearer.TryGetRequiredConfiguration(_logger, "ValidAudiences", out string? jwtAudiences) ||
-        !authSchemeBearer.TryGetRequiredConfiguration<int?>(_logger, "TokenExpirationSeconds", out int? tokenExpirationSeconds)) {
-      return new UserCredentialsValidationResult(false, null);
-    }
-
-    // Validate user by email and password with row-level hashing algorithm & password salt. 
-    AppUser? dbAppUser = await _appDbContext.AppUsers.FromSqlRaw("""
-      SELECT 
-        PasswordHash
-        ,PasswordSalt
-        ,HashingAlgorithm
-        ,Username
-        ,EmailAddress
-        ,TimeZoneId
-        ,Locale
-        ,Currency
-        ,FirstName
-        ,LastName
-        ,MiddleName
-        ,DateOfBirth
-        ,ProfileImageUrl
-        ,PhoneNumber
-        ,AddressLine1
-        ,AddressLine2
-        ,City
-        ,State
-        ,PostalCode
-        ,CountryCode
-      FROM AppUsers 
-      WHERE EmailAddress = @StatedEmailAddress;
-      """, StatedEmailAddress, StatedPassword).SingleOrDefaultAsync(cancellationToken: ct);
+    // Step 1: Retrieve the user from the database based on the stated email address
+    AppUser? dbAppUser = await _appDbContext.AppUsers
+      .SingleOrDefaultAsync(au => au.EmailAddress.Equals(StatedEmailAddress), cancellationToken: ct);
     if (dbAppUser is null) {
       // TODO: Logging?
       return new UserCredentialsValidationResult(false, null);
     }
 
-    // Step 2: Compute the hash using C# code based on retrieved hashing algorithm and salt
+    // Step 2: Compute the hash using C# code based on retrieved User hashing algorithm and salt
     string computedHash = ComputeHash(dbAppUser.HashingAlgorithm, StatedPassword, dbAppUser.PasswordSalt);
 
-    if (computedHash != dbAppUser.PasswordHash) {
+    // Step 3: Compare the computed hash with the stored hash
+    if (!computedHash.Equals(dbAppUser.PasswordHash)) {
       // Password is invalid!
       return new UserCredentialsValidationResult(false, null);
+    }
+
+    AuthenticatedAppUser? authenticatedAppUser = GetAuthenticatedAppUser(dbAppUser!);
+    return new UserCredentialsValidationResult(authenticatedAppUser is not null, authenticatedAppUser);
+  }
+
+  public async ValueTask<UserRefreshTokenValidationResult> TryValidateUserRefreshTokenAsync(Guid UserId, string RefreshToken, CancellationToken ct) {
+    AppUserRefreshToken? token = await _appDbContext.AppUserRefreshTokens.SingleOrDefaultAsync(x =>
+      x.Id == UserId
+      && x.RefreshToken == RefreshToken
+      && x.RefreshExpiry.ToDateTimeUtc() >= DateTime.UtcNow, cancellationToken: ct);
+    if (token is null) {
+      return new UserRefreshTokenValidationResult(false, null);
+    }
+
+    AppUser? dbAppUser = await _appDbContext.AppUsers.SingleOrDefaultAsync(x => x.Id == UserId, cancellationToken: ct);
+    if (dbAppUser is null) {
+      return new UserRefreshTokenValidationResult(false, null);
+    }
+
+    AuthenticatedAppUser? authenticatedAppUser = GetAuthenticatedAppUser(dbAppUser);
+    if (authenticatedAppUser is null) {
+      return new UserRefreshTokenValidationResult(false, null);
+    }
+
+    return new UserRefreshTokenValidationResult(true, authenticatedAppUser);
+  }
+
+  public async Task StoreAppUserRefreshToken(AppUserRefreshToken appUserRefreshToken) {
+    _appDbContext.AppUserRefreshTokens.Add(appUserRefreshToken);
+    await _appDbContext.SaveChangesAsync();
+  }
+
+  private static string ComputeHash(string hashingAlgorithmName, string password, string salt) {
+
+    HashAlgorithm hashAlgorithm = hashingAlgorithmName switch {
+      "SHA256" => SHA256.Create(),
+      "SHA512" => SHA512.Create(),
+      _ => throw new NotSupportedException($"Unsupported hashing algorithm: {hashingAlgorithmName}; must be one of SHA256, SHA512")
+    };
+
+    // Combine password and salt
+    byte[] combinedBytes = Encoding.UTF8.GetBytes(password + salt);
+
+    // Compute the hash
+    byte[] hashBytes = hashAlgorithm.ComputeHash(combinedBytes);
+
+    // Convert to a base64 string or hex string as needed
+    return Convert.ToBase64String(hashBytes);
+  }
+
+  private AuthenticatedAppUser? GetAuthenticatedAppUser(AppUser dbAppUser) {
+    IConfigurationSection authSchemeBearer = _config.GetRequiredSection("Authentication:Schemes:Bearer");
+    if (!authSchemeBearer.TryGetRequiredConfiguration(_logger, "PublicSigningKey", out string? jwtPublicSigningKey) ||
+        !authSchemeBearer.TryGetRequiredConfiguration(_logger, "PrivateSigningKey", out string? jwtPrivateSigningKey) ||
+        !authSchemeBearer.TryGetRequiredConfiguration(_logger, "ValidIssuer", out string? jwtIssuer) ||
+        !authSchemeBearer.TryGetRequiredConfiguration(_logger, "ValidAudiences", out string? jwtAudiences) ||
+        !authSchemeBearer.TryGetRequiredConfiguration<int?>(_logger, "TokenExpirationSeconds", out int? tokenExpirationSeconds)) {
+      return null;
     }
 
     List<AssignedUserRolePublicView> userRoles
       = [.. (from aur in _appDbContext.AppUserAssignedRoles
                           join ar in _appDbContext.AppUserRoles on aur.AppUserRoleId equals ar.Id
-                          where aur.AppUserId == dbAppUser!.Id
+                          where aur.AppUserId == dbAppUser.Id
           select new AssignedUserRolePublicView(ar.ShortName, ar.LongName))];
     List<UserClaimPublicView> userClaims = [];
 
     if (dbAppUser.AdministratorId.HasValue) {
       userRoles.Add(new AssignedUserRolePublicView("Admin", "Administrator"));
-      userClaims.Add(new UserClaimPublicView("AdminstratorId", dbAppUser.AdministratorId.ToString()!));
+      userClaims.Add(new UserClaimPublicView("AdministratorId", dbAppUser.AdministratorId.ToString()!));
     }
 
     // Set all other token properties of AppUser to userClaims, being careful not to leak anything which
     // must remain private for security purposes. Be verbose rather than using reflection or other
     // trickery...
     //
-    // Let's carefully and explictly declare every property which we'll set into the client token.
+    // Let's carefully and explicitly declare every property which we'll set into the client token.
+    userClaims.Add(new("UserID", dbAppUser.Id.ToString()!));
     userClaims.Add(new("Username", dbAppUser.Username));
     userClaims.Add(new("EmailAddress", dbAppUser.EmailAddress));
     userClaims.Add(new("TimeZoneId", dbAppUser.TimeZoneId));
@@ -134,7 +159,7 @@ internal class DaySpaUserAuthenticationService : IAppUserAuthenticationService {
     }
 
     Instant tokenExpiresAtUtc = Instant.FromDateTimeUtc(DateTime.UtcNow.AddSeconds(tokenExpirationSeconds!.Value));
-    
+
     string jwtToken = JwtBearer.CreateToken(
             o => {
               // Base64 encoded private-key
@@ -154,34 +179,13 @@ internal class DaySpaUserAuthenticationService : IAppUserAuthenticationService {
               }
             });
 
-    AuthenticatedAppUser appUser = new() {
+    AuthenticatedAppUser authenticatedAppUser = new() {
       Token = jwtToken,
       TokenExpiresAtUtc = tokenExpiresAtUtc,
       Roles = userRoles,
       Claims = userClaims
     };
-    return new UserCredentialsValidationResult(true, appUser);
-  }
 
-  private static string ComputeHash(string hashingAlgorithmName, string password, string salt) {
-
-    HashAlgorithm hashAlgorithm = hashingAlgorithmName switch {
-      "SHA256" => SHA256.Create(),
-      "SHA512" => SHA512.Create(),
-      _ => throw new NotSupportedException($"Unsupported hashing algorithm: {hashingAlgorithmName}; must be one of SHA256, SHA512")
-    };
-
-    // Combine password and salt
-    byte[] combinedBytes = Encoding.UTF8.GetBytes(password + salt);
-
-    // Compute the hash
-    byte[] hashBytes = hashAlgorithm.ComputeHash(combinedBytes);
-
-    // Convert to a base64 string or hex string as needed
-    return Convert.ToBase64String(hashBytes);
-  }
-
-  public ValueTask<UserCredentialsValidationResult> TryValidateUserRefreshTokenAsync(Guid UserId, string RefreshToken, Instant ExpiryDate, CancellationToken ct) {
-    throw new NotImplementedException();
+    return authenticatedAppUser;
   }
 }

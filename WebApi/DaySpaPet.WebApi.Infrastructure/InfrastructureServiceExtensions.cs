@@ -20,10 +20,11 @@ public static class InfrastructureServiceExtensions {
     services.AssertImplementationIsRegisteredAs<Serilog.ILogger>(ServiceLifetime.Singleton);
     services.AssertImplementationIsRegisteredAs<IHttpContextAccessor>(ServiceLifetime.Singleton);
 
-    // Register things which this layer provides an implimentation for
+    // Register things which this layer provides an implementation for
     services.AddSingleton<IClock, DaySpaPetClock>();
     services.AddSingleton<IGlobalizationService, DaySpaPetGlobalizationService>();
     services.AddScoped<IListClientsShallowQueryService, ListClientsShallowQueryService>();
+    services.AddTransient<IAppUserAuthenticationService, DaySpaUserAuthenticationService>();
 
     // During development we want to have fake implementations 
     if (isDevelopment) {
@@ -42,14 +43,12 @@ public static class InfrastructureServiceExtensions {
     //services.AddScoped<IEmailSender, FakeSmtpEmailSender>();
     //services.AddScoped<IListClientsQueryService, FakeListClientsQueryService>();
     //services.AddScoped<IListIncompleteItemsQueryService, FakeListIncompleteItemsQueryService>();
-    services.AddTransient<IAppUserAuthenticationService, FakeDaySpaUserAuthenticationService>();
   }
 
   private static void RegisterProductionOnlyDependencies(IServiceCollection services) {
     //services.AddScoped<IEmailSender, SmtpEmailSender>();
     //services.AddScoped<IListClientsQueryService, ListClientsQueryService>();
     //services.AddScoped<IListIncompleteItemsQueryService, ListIncompleteItemsQueryService>();
-    services.AddTransient<IAppUserAuthenticationService, DaySpaUserAuthenticationService>();
   }
 
   private static void RegisterEF(IServiceCollection services, string connectionString) {

@@ -21,8 +21,8 @@ public class UpdateClientHandler : ICommandHandler<UpdateClientCommand, Result<C
     OriginClock originClock = _appUserRequestContext.ClockSnapshot;
 
     existingClient.UpdateName(request.FirstName, request.LastName, originClock);
-    existingClient.UpdatePhone(request.PhoneCountryCode, request.PhoneNumber, request.PhoneExtension);
-    existingClient.UpdateStatus(ClientAccountStatus.FromValue(request.Status));
+    existingClient.UpdatePhone(request.PhoneCountryCode, request.PhoneNumber, request.PhoneExtension, originClock);
+    existingClient.UpdateStatus(ClientAccountStatus.FromValue(request.Status), originClock);
     existingClient.UpdateEmailAddress(request.EmailAddress!, originClock);
 
     await _repository.UpdateAsync(existingClient, cancellationToken);

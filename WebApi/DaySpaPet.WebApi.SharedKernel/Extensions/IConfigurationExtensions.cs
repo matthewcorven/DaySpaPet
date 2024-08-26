@@ -11,6 +11,15 @@ public static class IConfigurationExtensions {
     return true;
   }
 
+  public static bool TryGetRequiredConfiguration(this IConfigurationSection configSection, string key, out string? value) {
+    value = configSection[key];
+    if (string.IsNullOrWhiteSpace(value)) {
+      //_logger.Information($"{key} is not set in configuration via appsettings at \"{configSection.Path}:{key}\", nor overridden by Environment Variable key \"{key.Replace(":", "__")}\"");
+      return false;
+    }
+    return true;
+  }
+  
   public static bool TryGetRequiredConfiguration<TOut>(this IConfiguration configSection, string key, out TOut? value) {
     value = default!;
 

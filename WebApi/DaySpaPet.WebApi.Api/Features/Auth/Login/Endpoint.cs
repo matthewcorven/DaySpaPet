@@ -18,10 +18,7 @@ public class UserLogin : Endpoint<LoginRequest, TokenRefreshResponse> {
     UserCredentialsValidationResult validationResult = await UserAuthenticationService.TryValidateUserCredentialsAsync(req.Email, req.Password, ct);
 
     if (validationResult.Validated && validationResult.AuthenticatedAppUser is not null) {
-      string userID = validationResult.AuthenticatedAppUser.Value.Claims
-        .SingleOrDefault(c => c.Key == "UserID").Value 
-        ?? throw new("UserID claim not found!");
-      Response = await CreateTokenWith<UserTokenService>(userID, p => {
+      Response = await CreateTokenWith<AppUserRefreshTokenService>(validationResult.AuthenticatedAppUser.Value.UserId.ToString()!, p => {
         p.Roles.AddRange(validationResult.AuthenticatedAppUser.Value.Roles.Select(r => r.ShortName));
         p.Claims.AddRange(validationResult.AuthenticatedAppUser.Value.Claims.Select(c => new Claim(c.Key, c.Value)));
       });

@@ -2,7 +2,6 @@
 using DaySpaPet.WebApi.SharedKernel;
 using NodaTime;
 using System.Diagnostics;
-using EntityBase = DaySpaPet.WebApi.SharedKernel.EntityBase;
 
 namespace DaySpaPet.WebApi.Core.AppUserAggregate;
 public class AppUserRefreshToken : EntityBase<Guid> {

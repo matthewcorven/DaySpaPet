@@ -10,4 +10,15 @@ public readonly record struct AuthenticatedAppUser {
   public required Instant TokenExpiresAtUtc { get; init; }
   public required List<AssignedUserRolePublicView> Roles { get; init; }
   public required List<UserClaimPublicView> Claims { get; init; }
+  public Guid? UserId {
+    get {
+
+      UserClaimPublicView? userIdClaim = Claims.SingleOrDefault(c => c.Key == "UserID");
+      if (userIdClaim is null)
+        return null;
+
+      return Guid.Parse(userIdClaim.Value.Value);
+    }
+  }
+
 }
