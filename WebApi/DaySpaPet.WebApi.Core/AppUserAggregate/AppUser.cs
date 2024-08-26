@@ -14,7 +14,6 @@ public class AppUser : EntityBase<Guid>, IAggregateRoot {
   public string PasswordHash { get; internal set; }
   public string PasswordSalt { get; internal set; }
   public string HashingAlgorithm { get; internal set; }
-  // TODO: Ensure unique across tenant
   public string Username { get; internal set; }
   public string EmailAddress { get; internal set; }
   public string TimeZoneId { get; internal set; }
@@ -197,10 +196,19 @@ public class AppUser : EntityBase<Guid>, IAggregateRoot {
     RegisterDomainEvent(domainEvent);
   }
 
+  public void RevokeAdministrativeAccess(OriginClock originClock) {
+    Guid? oldAdministratorId = AdministratorId;
+    AdministratorId = null;
+
+    SetModifiedAt(originClock);
+
+    AppUserRevokedAdministrativeAccessEvent domainEvent = new(Id, Username, EmailAddress, oldAdministratorId!.Value, originClock);
+    RegisterDomainEvent(domainEvent);
+  }
+
   public void AddAppUserRole(AppUserRole appUserRole,
           OriginClock originClock) {
-    AppUserAssignedRole auar = new (Id, appUserRole.Id, originClock);
-    _userRoles.Add(auar);
+    _userRoles.Add(new(Id, appUserRole.Id, originClock));
 
     SetModifiedAt(originClock);
 

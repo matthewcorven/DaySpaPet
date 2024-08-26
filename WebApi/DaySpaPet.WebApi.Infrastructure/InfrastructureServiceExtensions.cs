@@ -1,4 +1,5 @@
-﻿using DaySpaPet.WebApi.Core.Interfaces;
+﻿global using NodaTimeExtensions = Microsoft.EntityFrameworkCore.SqlServer.NodaTime.Extensions;
+using DaySpaPet.WebApi.Core.Interfaces;
 using DaySpaPet.WebApi.Infrastructure.CoreImplementations;
 using DaySpaPet.WebApi.Infrastructure.Data;
 using DaySpaPet.WebApi.Infrastructure.Data.Queries;
