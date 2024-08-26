@@ -33,7 +33,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0-Global", "0-Global", "{9D
 		..\.gitattributes = ..\.gitattributes
 		..\.gitignore = ..\.gitignore
 		..\.globalconfig = ..\.globalconfig
+		..\Directory.Build.props = ..\Directory.Build.props
+		..\Directory.Build.targets = ..\Directory.Build.targets
+		..\Directory.Packages.props = ..\Directory.Packages.props
 		..\docker-compose.yml = ..\docker-compose.yml
+		Dockerfile = Dockerfile
 		..\dotnet-clean-sln.bat = ..\dotnet-clean-sln.bat
 		..\dotnet-restore-sln.bat = ..\dotnet-restore-sln.bat
 		..\dotnet-workload-restore.bat = ..\dotnet-workload-restore.bat
@@ -41,15 +45,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0-Global", "0-Global", "{9D
 		..\LICENSE.md = ..\LICENSE.md
 		..\README.md = ..\README.md
 		..\update-nuget-dependencies.ps1 = ..\update-nuget-dependencies.ps1
-		..\Directory.Build.props = ..\Directory.Build.props
-		..\Directory.Build.targets = ..\Directory.Build.targets
-		..\Directory.Packages.props = ..\Directory.Packages.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0-Scripts", "0-Scripts", "{342EFBAC-3AFF-47DE-849B-136FE38E3264}"
 	ProjectSection(SolutionItems) = preProject
 		update-nuget-dependencies.ps1 = update-nuget-dependencies.ps1
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DaySpaPet.WebApi.AppHost", "DaySpaPet.WebApi.AppHost\DaySpaPet.WebApi.AppHost.csproj", "{C0A1139D-9728-42B0-8A0A-A4D761B79ADA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaySpaPet.WebApi.ServiceDefaults", "DaySpaPet.WebApi.ServiceDefaults\DaySpaPet.WebApi.ServiceDefaults.csproj", "{D20D27F6-159C-4784-8345-C64379673F47}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,6 +82,14 @@ Global
 		{33C4EAE0-5C63-4382-B7CD-473C5AD95930}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33C4EAE0-5C63-4382-B7CD-473C5AD95930}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33C4EAE0-5C63-4382-B7CD-473C5AD95930}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0A1139D-9728-42B0-8A0A-A4D761B79ADA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0A1139D-9728-42B0-8A0A-A4D761B79ADA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0A1139D-9728-42B0-8A0A-A4D761B79ADA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0A1139D-9728-42B0-8A0A-A4D761B79ADA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D20D27F6-159C-4784-8345-C64379673F47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D20D27F6-159C-4784-8345-C64379673F47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D20D27F6-159C-4784-8345-C64379673F47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D20D27F6-159C-4784-8345-C64379673F47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

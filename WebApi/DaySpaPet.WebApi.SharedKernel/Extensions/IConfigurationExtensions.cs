@@ -19,23 +19,12 @@ public static class IConfigurationExtensions {
     }
     return true;
   }
-  
-  public static bool TryGetRequiredConfiguration<TOut>(this IConfiguration configSection, string key, out TOut? value) {
+
+  public static bool TryGetRequiredConfiguration(this IConfiguration configSection, Serilog.ILogger logger, string key, out string? value) {
     value = default!;
 
-    if (int.TryParse(configSection[key], out int intValue)) {
-      value = (TOut)(object)intValue;
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  public static bool TryGetRequiredConfiguration<TOut>(this IConfiguration configSection, Serilog.ILogger logger, string key, out TOut? value) {
-    value = default!;
-
-    if (int.TryParse(configSection[key], out int intValue)) {
-      value = (TOut)(object)intValue;
+    if (configSection[key] is not null) {
+      value = configSection[key];
       return true;
     } else {
       logger.Fatal("Unable to read value for required section key {sectionName}:{keyName}", configSection.ToString(), key);

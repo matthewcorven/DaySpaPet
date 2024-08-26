@@ -4,6 +4,7 @@ using DaySpaPet.WebApi.SharedKernel;
 using DaySpaPet.WebApi.SharedKernel.Extensions;
 using FastEndpoints;
 using FastEndpoints.Security;
+using System.Diagnostics;
 using System.Security.Claims;
 
 namespace DaySpaPet.WebApi.Api.Features.Auth.RefreshToken;
@@ -24,17 +25,17 @@ public class AppUserRefreshTokenService : RefreshTokenService<TokenRequest, Toke
     _appUserRequestContext = appUserRequestContext;
 
     IConfigurationSection authSchemeBearer = config.GetRequiredSection("Authentication:Schemes:Bearer");
-    if (!authSchemeBearer.TryGetRequiredConfiguration(_logger, "PublicSigningKey", out string? jwtPublicSigningKey) ||
-        !authSchemeBearer.TryGetRequiredConfiguration(_logger, "PrivateSigningKey", out string? jwtPrivateSigningKey) ||
-        !authSchemeBearer.TryGetRequiredConfiguration(_logger, "ValidIssuer", out string? jwtIssuer) ||
-        !authSchemeBearer.TryGetRequiredConfiguration(_logger, "ValidAudiences", out string? jwtAudiences) ||
-        !authSchemeBearer.TryGetRequiredConfiguration<int?>(_logger, "TokenExpirationSeconds", out int? tokenExpirationSeconds)) {
+    if (!authSchemeBearer.TryGetRequiredConfiguration(_logger, "PrivateSigningKey", out string? jwtPrivateSigningKey) ||
+        !authSchemeBearer.TryGetRequiredConfiguration(_logger, "TokenExpirationSeconds", out string? tokenExpirationSeconds)) {
+      _logger.Fatal("Unabled to retrieve the required configuration for the JWT token signing key or token expiration seconds!");
+      Debugger.Break();
       return;
     }
 
+
     Setup(x => {
       x.TokenSigningKey = jwtPrivateSigningKey;
-      x.AccessTokenValidity = TimeSpan.FromMinutes(1);
+      x.AccessTokenValidity = TimeSpan.FromSeconds(int.Parse(tokenExpirationSeconds!));
       x.RefreshTokenValidity = TimeSpan.FromHours(1);
       x.Endpoint("/user/authentication/refresh-token", ep => {
         ep.Summary(s => s.Description = "this is the refresh token endpoint");

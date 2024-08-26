@@ -98,7 +98,7 @@ internal class DaySpaUserAuthenticationService : IAppUserAuthenticationService {
         !authSchemeBearer.TryGetRequiredConfiguration(_logger, "PrivateSigningKey", out string? jwtPrivateSigningKey) ||
         !authSchemeBearer.TryGetRequiredConfiguration(_logger, "ValidIssuer", out string? jwtIssuer) ||
         !authSchemeBearer.TryGetRequiredConfiguration(_logger, "ValidAudiences", out string? jwtAudiences) ||
-        !authSchemeBearer.TryGetRequiredConfiguration<int?>(_logger, "TokenExpirationSeconds", out int? tokenExpirationSeconds)) {
+        !authSchemeBearer.TryGetRequiredConfiguration(_logger, "TokenExpirationSeconds", out string? tokenExpirationSeconds)) {
       return null;
     }
 
@@ -158,7 +158,7 @@ internal class DaySpaUserAuthenticationService : IAppUserAuthenticationService {
       userClaims.Add(new("CountryCode", dbAppUser.CountryCode));
     }
 
-    Instant tokenExpiresAtUtc = Instant.FromDateTimeUtc(DateTime.UtcNow.AddSeconds(tokenExpirationSeconds!.Value));
+    Instant tokenExpiresAtUtc = Instant.FromDateTimeUtc(DateTime.UtcNow.AddSeconds(int.Parse(tokenExpirationSeconds!)));
 
     string jwtToken = JwtBearer.CreateToken(
             o => {

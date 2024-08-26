@@ -14,6 +14,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Endpoints\Authentication\**" />
+    <Content Remove="Endpoints\Authentication\**" />
+    <EmbeddedResource Remove="Endpoints\Authentication\**" />
+    <None Remove="Endpoints\Authentication\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Ardalis.ListStartupServices" />
     <PackageReference Include="Ardalis.Result" />
     <PackageReference Include="Ardalis.Result.AspNetCore" />
@@ -38,13 +45,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DaySpaPet.WebApi.ServiceDefaults\DaySpaPet.WebApi.ServiceDefaults.csproj" />
     <ProjectReference Include="..\DaySpaPet.WebApi.SharedKernel\DaySpaPet.WebApi.SharedKernel.csproj" />
     <ProjectReference Include="..\DaySpaPet.WebApi.Infrastructure\DaySpaPet.WebApi.Infrastructure.csproj" />
     <ProjectReference Include="..\DaySpaPet.WebApi.UseCases\DaySpaPet.WebApi.UseCases.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Endpoints\Authentication\" />
   </ItemGroup>
 
 </Project>
