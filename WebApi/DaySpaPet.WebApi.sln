@@ -53,7 +53,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0-Scripts", "0-Scripts", "{
 		update-nuget-dependencies.ps1 = update-nuget-dependencies.ps1
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DaySpaPet.WebApi.AppHost", "DaySpaPet.WebApi.AppHost\DaySpaPet.WebApi.AppHost.csproj", "{C0A1139D-9728-42B0-8A0A-A4D761B79ADA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaySpaPet.WebApi.AppHost", "DaySpaPet.WebApi.AppHost\DaySpaPet.WebApi.AppHost.csproj", "{C0A1139D-9728-42B0-8A0A-A4D761B79ADA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaySpaPet.WebApi.ServiceDefaults", "DaySpaPet.WebApi.ServiceDefaults\DaySpaPet.WebApi.ServiceDefaults.csproj", "{D20D27F6-159C-4784-8345-C64379673F47}"
 EndProject
