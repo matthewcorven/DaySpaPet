@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Data\AppDbContext.cs~RF11a5a565.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" />
     <PackageReference Include="Bogus" />
     <PackageReference Include="EntityFrameworkCore.Exceptions.SqlServer" />

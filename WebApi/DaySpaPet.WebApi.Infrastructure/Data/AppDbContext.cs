@@ -29,21 +29,17 @@ public partial class AppDbContext : DbContext {
     modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
 #if DEBUG
-    SetupSeedData(modelBuilder);
+    // Generate seed data with Bogus, which will then be used in migrations
+    BB.BubbleBuddiesDatabaseSeeder dbSeeder = new();
+
+    // Apply the seed data on the tables
+    modelBuilder.Entity<Client>().HasData(dbSeeder.Clients);
+    modelBuilder.Entity<Pet>().HasData(dbSeeder.Pets);
 #endif
   }
 
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
     optionsBuilder.UseExceptionProcessor();
-  }
-
-  private static void SetupSeedData(ModelBuilder modelBuilder) {
-    // Generate seed data with Bogus, which will then be used in migrations
-    DatabaseSeeder dbSeeder = new();
-
-    // Apply the seed data on the tables
-    modelBuilder.Entity<Client>().HasData(dbSeeder.Clients);
-    modelBuilder.Entity<Pet>().HasData(dbSeeder.Pets);
   }
 
   public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken()) {
@@ -63,7 +59,7 @@ public partial class AppDbContext : DbContext {
                     .Where(e => e.DomainEvents.Any())
                     .ToArray();
 
-    Console.WriteLine($"Emitting ({entitiesWithEvents.Count()}) domain events");
+    Console.WriteLine($"Emitting ({entitiesWithEvents.Length}) domain events");
     await _dispatcher.DispatchAndClearEvents(entitiesWithEvents);
 
     return result;
