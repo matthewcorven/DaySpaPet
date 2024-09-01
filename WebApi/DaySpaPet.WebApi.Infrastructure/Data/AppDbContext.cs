@@ -39,7 +39,7 @@ public partial class AppDbContext : DbContext {
 
   private static void SetupSeedData(ModelBuilder modelBuilder) {
     // Generate seed data with Bogus, which will then be used in migrations
-    DatabaseSeeder dbSeeder = new DatabaseSeeder();
+    DatabaseSeeder dbSeeder = new();
 
     // Apply the seed data on the tables
     modelBuilder.Entity<Client>().HasData(dbSeeder.Clients);

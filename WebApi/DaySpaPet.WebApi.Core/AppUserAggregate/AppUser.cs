@@ -150,7 +150,7 @@ public class AppUser : EntityBase<Guid>, IAggregateRoot {
 
     SetModifiedAt(originClock);
 
-    AppUserLocationUpdatedEvent domainEvent = new AppUserLocationUpdatedEvent(Id, Username, EmailAddress, newTimeZoneId, newLocale, newCurrency, oldTimeZoneId, oldLocale, oldCurrency, originClock);
+    AppUserLocationUpdatedEvent domainEvent = new(Id, Username, EmailAddress, newTimeZoneId, newLocale, newCurrency, oldTimeZoneId, oldLocale, oldCurrency, originClock);
     RegisterDomainEvent(domainEvent);
   }
 

@@ -17,5 +17,4 @@
         "titleBar.activeForeground": "#FCFCFE"
     },
     "github.copilot.editor.enableAutoCompletions": true,
-    "github.copilot.inlineSuggest.enable": true,
 }

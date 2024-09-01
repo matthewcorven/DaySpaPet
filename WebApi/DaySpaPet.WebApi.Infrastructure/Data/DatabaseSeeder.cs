@@ -64,9 +64,9 @@ public sealed class DatabaseSeeder {
 #pragma warning restore CA1859 // Use concrete types when possible for improved performance
   {
     List<Pet> pets = [];
-    Randomizer random = new Bogus.Randomizer();
+    Randomizer random = new();
 
-    Faker pf = new Faker("en");
+    Faker pf = new("en");
     DateTime oldestBirthDate = pf.Date.Past(20);
     DateTime youngestBirthDate = _dateReference.AddDays(-1);
 
@@ -86,7 +86,7 @@ public sealed class DatabaseSeeder {
         string createdAtTimeZoneId = "America/New_York";
         LocalDateTime local = LocalDateTime.FromDateTime(birthDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Local).AddDays(pf.Random.Int(1, 547)));
 
-        OriginClock originClock = new OriginClock(local, createdAtTimeZoneId, createdAtDst);
+        OriginClock originClock = new(local, createdAtTimeZoneId, createdAtDst);
 
         PetStatus status = age <= 1
                 ? random.WeightedRandom(petStatuses, puppyPetStatusWeights)
@@ -112,7 +112,7 @@ public sealed class DatabaseSeeder {
                 : DateOnly.FromDateTime(((DateOnly)firstVisitDate).ToDateTime(TimeOnly.MinValue).AddDays(pf.Random.Int(1, 60)));
 
         OptionalNewPetData data = new(weight, age, birthDate, adoptionDate, deathDate, firstVisitDate, mostRecentVisitDate);
-        Pet pet = new Pet(client.Id, pf.Person.FirstName, AnimalType.Dog,
+        Pet pet = new(client.Id, pf.Person.FirstName, AnimalType.Dog,
                 GetRandomBreed(pf), originClock, data) {
           Id = petIdIterator++
         };

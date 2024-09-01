@@ -19,7 +19,7 @@ public sealed class GetWithAllPetsHandler
       return Result.NotFound();
     }
 
-    ClientWithPetsDTO clientWithPets = new ClientWithPetsDTO(client.Id, client.FirstName, client.LastName,
+    ClientWithPetsDTO clientWithPets = new(client.Id, client.FirstName, client.LastName,
             client.PhoneCountryCode, client.PhoneNumber, client.PhoneExtension!, client.EmailAddress!,
             client.Pets.Select(p =>
                     new PetDTO(p.Id, p.ClientId, p.Name, p.Type, p.Breed,

@@ -33,7 +33,7 @@ public class DeactivateClientService : IDeactivateClientService {
     client.UpdateStatus(ClientAccountStatus.Deactive, originClock);
     await _repository.UpdateAsync(client);
 
-    ClientDeactivationRequestedEvent domainEvent = new ClientDeactivationRequestedEvent(clientId, originClock);
+    ClientDeactivationRequestedEvent domainEvent = new(clientId, originClock);
     await _mediator.Publish(domainEvent);
     return Result.Success();
   }

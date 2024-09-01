@@ -11,7 +11,7 @@ internal sealed class AddRequestOriginClockTimeZoneId : IOperationProcessor {
   }
   public AddRequestOriginClockTimeZoneId(Action<RequestOriginClockTimeProcessorOptions>? configure = null) {
     if (configure != null) {
-      RequestOriginClockTimeProcessorOptions settings = new RequestOriginClockTimeProcessorOptions();
+      RequestOriginClockTimeProcessorOptions settings = new();
       configure?.Invoke(settings);
       if (settings.Strict) {
         Guard.Against.NullOrEmpty(RuntimeEnvironmentValues.HttpRequestHeader, Constants.HttpRequestHeader_Origin_TimeZoneId);
@@ -24,7 +24,7 @@ internal sealed class AddRequestOriginClockTimeZoneId : IOperationProcessor {
   }
 
   public bool Process(OperationProcessorContext context) {
-    OpenApiParameter RequestHeader_OriginClockTZDBID = new OpenApiParameter() {
+    OpenApiParameter RequestHeader_OriginClockTZDBID = new() {
       Name = Constants.HttpRequestHeader_Origin_TimeZoneId,
       Kind = OpenApiParameterKind.Header,
       IsRequired = true,

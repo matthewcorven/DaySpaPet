@@ -25,7 +25,7 @@ public static class StringGuardExtensions {
       return input;
     }
 
-    System.ComponentModel.DataAnnotations.EmailAddressAttribute ea = new System.ComponentModel.DataAnnotations.EmailAddressAttribute();
+    System.ComponentModel.DataAnnotations.EmailAddressAttribute ea = new();
     if (!ea.IsValid(input.Trim())) {
       throw new ArgumentException(message ?? $"Invalid email address \"{input}\".", inputParameterName);
     }
