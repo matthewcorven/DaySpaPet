@@ -45,7 +45,11 @@ public sealed class DatabaseSeeder {
             .RuleFor(c => c.CreatedAtDaylightSavingTime, f => true)
             .RuleFor(c => c.CreatedAtTimeZoneId, f => "America/New_York")
             .RuleFor(c => c.CreatedAtOriginLocalDateTime, f => LocalDateTime.FromDateTime(DateTime.Now))
-            .RuleFor(c => c.EmailAddress, f => f.Person.Email);
+            .RuleFor(c => c.EmailAddress, f => f.Person.Email)
+            .RuleFor(c => c.ModifiedAtServerInstantUtc, f =>  f.Random.Bool() ? Instant.FromDateTimeUtc(f.Date.Past()) : null)
+            .RuleFor(c => c.ModifiedAtDaylightSavingTime, f => true)
+            .RuleFor(c => c.ModifiedAtTimeZoneId, f => "America/New_York")
+            .RuleFor(c => c.ModifiedAtOriginLocalDateTime, f => LocalDateTime.FromDateTime(DateTime.Now));
 
     System.Collections.ObjectModel.ReadOnlyCollection<Client> clients = Enumerable.Range(1, amount)
             .Select(i => SeedRow(clientFaker, i))
