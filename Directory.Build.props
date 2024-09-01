@@ -7,8 +7,6 @@
     <ReportAnalyzer>true</ReportAnalyzer>
     <TargetFramework>net8.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
-  <PropertyGroup>
-    <NoWarn>1591</NoWarn> <!-- Remove this to turn on warnings for missing XML Comments -->
+    <EnableNETAnalyzers>True</EnableNETAnalyzers>
   </PropertyGroup>
 </Project>

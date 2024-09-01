@@ -26,7 +26,6 @@ dotnet_diagnostic.CA1508.severity = none
 
 # CA1509: Invalid entry in code metrics rule specification file
 dotnet_diagnostic.CA1509.severity = none
-
 # CA1510: Use ArgumentNullException throw helper
 dotnet_diagnostic.CA1510.severity = error
 
@@ -41,6 +40,9 @@ dotnet_diagnostic.CA1513.severity = warning
 
 # CA1514: Avoid redundant length argument
 dotnet_diagnostic.CA1514.severity = warning
+
+# CA1591: Missing XML comment for publicly visible type or member 'Type_or_Member'
+dotnet_diagnostic.CS1591.severity = none
 
 # CA1716: Identifiers should not match keywords
 dotnet_diagnostic.CA1716.severity = error
