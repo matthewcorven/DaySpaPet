@@ -1,22 +1,29 @@
-﻿global using NodaTimeExtensions = Microsoft.EntityFrameworkCore.SqlServer.NodaTime.Extensions;
+﻿using Aspire.Microsoft.EntityFrameworkCore.SqlServer;
+using SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime;
 using DaySpaPet.WebApi.Core.Interfaces;
 using DaySpaPet.WebApi.Infrastructure.CoreImplementations;
 using DaySpaPet.WebApi.Infrastructure.Data;
 using DaySpaPet.WebApi.Infrastructure.Data.Queries;
 using DaySpaPet.WebApi.SharedKernel;
 using DaySpaPet.WebApi.UseCases.Clients.ListShallow;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using NodaTime;
+using EntityFramework.Exceptions.SqlServer;
 
 namespace DaySpaPet.WebApi.Infrastructure;
 
 public static class InfrastructureServiceExtensions {
+
   public static IServiceCollection AddInfrastructureServices(
-          this IServiceCollection services,
-          bool isDevelopment,
-          string connectionString) {
+        this WebApplicationBuilder builder) {
+    IServiceCollection services = builder.Services;
+
     // Ensure DI dependencies of this layer are registered, and with the correct lifetime
     services.AssertImplementationIsRegisteredAs<Serilog.ILogger>(ServiceLifetime.Singleton);
     services.AssertImplementationIsRegisteredAs<IHttpContextAccessor>(ServiceLifetime.Singleton);
@@ -25,17 +32,23 @@ public static class InfrastructureServiceExtensions {
     services.AddSingleton<IClock, DaySpaPetClock>();
     services.AddSingleton<IGlobalizationService, DaySpaPetGlobalizationService>();
     services.AddScoped<IListClientsShallowQueryService, ListClientsShallowQueryService>();
-    services.AddTransient<IAppUserAuthenticationService, DaySpaUserAuthenticationService>();
+    services.AddScoped<IAppUserAuthenticationService, DaySpaUserAuthenticationService>();
 
-    // During development we want to have fake implementations 
+    // During development we want to have fake implementations
+    bool isDevelopment = builder.Environment.IsDevelopment();
     if (isDevelopment) {
       RegisterDevelopmentOnlyDependencies(services);
     } else {
       RegisterProductionOnlyDependencies(services);
     }
 
-    RegisterEF(services, connectionString);
+    builder.AddSqlServerDbContext<AppDbContext>("DaySpaPetDb", configureDbContextOptions: o => {
+      o.UseExceptionProcessor();
+      o.UseNodaTime();
+    });
 
+    services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+    services.AddScoped(typeof(IReadRepository<>), typeof(EfRepository<>));
 
     return services;
   }
@@ -50,14 +63,5 @@ public static class InfrastructureServiceExtensions {
     //services.AddScoped<IEmailSender, SmtpEmailSender>();
     //services.AddScoped<IListClientsQueryService, ListClientsQueryService>();
     //services.AddScoped<IListIncompleteItemsQueryService, ListIncompleteItemsQueryService>();
-  }
-
-  private static void RegisterEF(IServiceCollection services, string connectionString) {
-    services.AddDbContext<AppDbContext>(
-    (sp, options) => options
-                    .UseSqlServer(connectionString, o => o.UseNodaTime()));
-
-    services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
-    services.AddScoped(typeof(IReadRepository<>), typeof(EfRepository<>));
   }
 }

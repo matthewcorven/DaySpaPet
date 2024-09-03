@@ -4,6 +4,8 @@ using DaySpaPet.WebApi.Core.PetAggregate;
 using DaySpaPet.WebApi.SharedKernel;
 using EntityFramework.Exceptions.SqlServer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
 namespace DaySpaPet.WebApi.Infrastructure.Data;
@@ -12,9 +14,10 @@ public partial class AppDbContext : DbContext {
   private readonly IDomainEventDispatcher? _dispatcher;
 
   public AppDbContext(DbContextOptions<AppDbContext> options,
-          IDomainEventDispatcher? dispatcher)
+          IServiceScopeFactory serviceScopeFactory)
                   : base(options) {
-    _dispatcher = dispatcher;
+    using IServiceScope scope = serviceScopeFactory.CreateScope();
+    _dispatcher = scope.ServiceProvider.GetService<IDomainEventDispatcher>();
   }
 
   public DbSet<AppUser> AppUsers => Set<AppUser>();
@@ -36,10 +39,6 @@ public partial class AppDbContext : DbContext {
     modelBuilder.Entity<Client>().HasData(dbSeeder.Clients);
     modelBuilder.Entity<Pet>().HasData(dbSeeder.Pets);
 #endif
-  }
-
-  protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-    optionsBuilder.UseExceptionProcessor();
   }
 
   public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken()) {

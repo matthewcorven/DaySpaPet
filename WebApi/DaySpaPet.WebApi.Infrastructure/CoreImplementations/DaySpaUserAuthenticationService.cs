@@ -12,17 +12,22 @@ using Microsoft.EntityFrameworkCore;
 using DaySpaPet.WebApi.Core.AppUserAggregate;
 using System.Text;
 using System.Security.Cryptography;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DaySpaPet.WebApi.Infrastructure.CoreImplementations;
+
 internal class DaySpaUserAuthenticationService : IAppUserAuthenticationService {
   private readonly IConfiguration _config;
   private readonly ILogger _logger;
   private readonly AppDbContext _appDbContext;
 
-  public DaySpaUserAuthenticationService(IConfiguration config, Serilog.ILogger logger, AppDbContext appDbContext) {
-    _config = config;
-    _logger = logger;
-    _appDbContext = appDbContext;
+  public DaySpaUserAuthenticationService(IServiceScopeFactory serviceScopeFactory) {
+    using IServiceScope scope = serviceScopeFactory.CreateScope();
+    IServiceProvider serviceProvider = scope.ServiceProvider;
+
+    _config = serviceProvider.GetRequiredService<IConfiguration>();
+    _logger = serviceProvider.GetRequiredService<Serilog.ILogger>();
+    _appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
   }
 
   public async ValueTask<UserCredentialsValidationResult> TryValidateUserCredentialsAsync(string StatedEmailAddress, string StatedPassword, CancellationToken ct) {

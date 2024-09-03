@@ -56,3 +56,5 @@ dotnet_diagnostic.CA2254.severity = error
 # CA5392: Use DefaultDllImportSearchPaths attribute for P/Invokes
 dotnet_diagnostic.CA5392.severity = none
 
+# NU1602: 
+dotnet_diagnostic.NU1602.severity = none

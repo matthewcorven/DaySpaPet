@@ -1,8 +1,6 @@
 using Ardalis.GuardClauses;
 using Ardalis.ListStartupServices;
 using DaySpaPet.WebApi.Api.Endpoints.Behavior;
-using DaySpaPet.WebApi.Api.Features.Auth;
-using DaySpaPet.WebApi.Api.Features.Auth.RefreshToken;
 using DaySpaPet.WebApi.Core;
 using DaySpaPet.WebApi.Infrastructure;
 using DaySpaPet.WebApi.Infrastructure.Data;
@@ -13,7 +11,6 @@ using FastEndpoints.Security;
 using FastEndpoints.Swagger;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
@@ -24,133 +21,11 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
-
-Log.Logger = GenerateBootstrappedLogger();
-
-try {
-  Log.Information("Starting web application");
-
-  WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-  builder.Services.AddSerilog((services, lc) => lc
-          // Some additional configuration in addition to that of already bootstrapped logger.
-          .ReadFrom.Configuration(builder.Configuration)
-          .ReadFrom.Services(services));
-
-
-  builder.AddServiceDefaults();
-
-  builder.Services.AddSharedKernel();
-  builder.Services.AddCoreServices();
-  // Infrastructure
-  builder.Services.AddHttpContextAccessor();
-  string? connectionString = builder.Configuration.GetConnectionString("DaySpaPetDb");
-  Guard.Against.NullOrEmpty(connectionString, nameof(connectionString));
-  builder.Services.AddInfrastructureServices(builder.Environment.IsDevelopment(), connectionString!);
-
-  string? jwtPublicSigningKey = builder.Configuration["Authentication:Schemes:Bearer:PublicSigningKey"];
-  string? jwtPrivateSigningKey = builder.Configuration["Authentication:Schemes:Bearer:PrivateSigningKey"];
-  string? jwtIssuer = builder.Configuration["Authentication:Schemes:Bearer:ValidIssuer"];
-  string? jwtAudiences = builder.Configuration["Authentication:Schemes:Bearer:ValidAudiences"];
-
-  builder.Services
-          .AddAuthentication(
-               o => {
-                 o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                 o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-               });
-  builder.Services.AddAuthenticationJwtBearer(
-               signingKeyOptions => {
-                 // PEM+base64 encoded public-key
-                 signingKeyOptions.SigningKey = jwtPublicSigningKey;
-                 signingKeyOptions.SigningStyle = TokenSigningStyle.Asymmetric;
-                 signingKeyOptions.KeyIsPemEncoded = true;
-               },
-               jwtBearerOptions => {
-                 jwtBearerOptions.TokenValidationParameters.ValidIssuer = jwtIssuer;
-                 jwtBearerOptions.TokenValidationParameters.ValidAudience = jwtAudiences;
-                 jwtBearerOptions.TokenValidationParameters.ValidateAudience = true;
-                 jwtBearerOptions.TokenValidationParameters.ValidateIssuer = true;
-                 jwtBearerOptions.TokenValidationParameters.ValidateLifetime = true;
-                 jwtBearerOptions.TokenValidationParameters.ValidateIssuerSigningKey = true;
-                 jwtBearerOptions.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtPrivateSigningKey!));
-               }).AddAuthorizationBuilder()
-    .AddPolicy("AdministratorsOnly", x => x
-            .RequireRole("Administrator")
-            .RequireClaim("AdministratorID")
-            .RequireClaim("Username")
-            .RequireClaim("UserID"))
-    .AddPolicy("ManagersOnly", x => x
-            .RequireRole("Manager")
-            .RequireClaim("ManagerID")
-            .RequireClaim("Username")
-            .RequireClaim("UserID"))
-    .AddPolicy("EmployeeID", x => x
-            .RequireRole("Employee")
-            .RequireClaim("EmployeeID")
-            .RequireClaim("UserID"));
-  builder.Services.AddFastEndpoints().SwaggerDocument(o => {
-    o.ShortSchemaNames = true;
-    o.AutoTagPathSegmentIndex = 2;
-    o.DocumentSettings = s => {
-      s.Title = "DaySpaPet API";
-      s.Version = "v1";
-      s.OperationProcessors.Add(new AddRequestOriginClockTimeZoneId(_ => _.Strict = true));
-    };
-  });
-  // builder.Services.AddFastEndpointsApiExplorer();
-
-  ConfigureMediatR(builder);
-
-  // add list services for diagnostic purposes - see https://github.com/ardalis/AspNetCoreStartupServices
-  builder.Services.Configure<ServiceConfig>(config => {
-    config.Services = new List<ServiceDescriptor>(builder.Services);
-
-    // optional - default path to view services is /listallservices - recommended to choose your own path
-    config.Path = "/listservices";
-  });
-
-
-  WebApplication app = builder.Build();
-
-  if (app.Environment.IsDevelopment()) {
-    app.UseDeveloperExceptionPage();
-    app.UseShowAllServicesMiddleware(); // see https://github.com/ardalis/AspNetCoreStartupServices
-  } else {
-    app.UseDefaultExceptionHandler(); // from FastEndpoints
-    app.UseHsts();
-  }
-
-  app.MapDefaultEndpoints();
-
-  //Add support to logging request with SERILOG
-  app.UseSerilogRequestLogging();
-
-  // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
-  app.UseSwaggerUi(c => {
-    c.DocumentPath = "/swagger/v1/swagger.json";
-    c.DocumentTitle = "DaySpaPet API v1";
-  });
-
-  app.UseAuthentication();
-  app.UseAuthorization();
-  app.UseFastEndpoints()
-    .UseSwaggerGen();
-
-  app.UseHttpsRedirection();
-
-  BootstrapDatabase(builder, app);
-
-  app.Run();
-} catch (Exception ex) {
-  Debugger.Break();
-  Log.Fatal(ex, "Application terminated unexpectedly");
-} finally {
-  Log.CloseAndFlush();
-}
-
 // Make the implicit Program.cs class public, so integration tests can reference the correct assembly for host building
+
 public partial class Program {
   static void ConfigureMediatR(WebApplicationBuilder builder) {
+    builder.Services.AddScoped<IDomainEventDispatcher, MediatRDomainEventDispatcher>();
     Assembly?[] mediatRAssemblies =
     [
       Assembly.GetAssembly(typeof(CoreAssemblyLocator)),
@@ -161,7 +36,6 @@ public partial class Program {
     builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(mediatRAssemblies!));
     builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CaptureUserRequestContextBehavior<,>));
     builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-    builder.Services.AddScoped<IDomainEventDispatcher, MediatRDomainEventDispatcher>();
   }
 
   static void BootstrapDatabase(WebApplicationBuilder builder, WebApplication app) {
@@ -221,10 +95,137 @@ public partial class Program {
         options.Endpoint = "http://localhost:4317/v1/logs";
         options.Protocol = OtlpProtocol.Grpc;
         options.ResourceAttributes = new Dictionary<string, object> {
-          ["service.name"] = "dayspa-pet--web-api--api"
+          ["service.name"] = "dayspapet-webapi-api"
         };
       })
       .CreateBootstrapLogger();
     return logger;
   }
+
+  private static void Main(string[] args) {
+    Log.Logger = GenerateBootstrappedLogger();
+
+    try {
+      Log.Information("Starting web application");
+
+      WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+      builder.Services.AddSerilog((services, lc) => lc
+              // Some additional configuration in addition to that of already bootstrapped logger.
+              .ReadFrom.Configuration(builder.Configuration)
+              .ReadFrom.Services(services));
+
+
+      builder.AddServiceDefaults();
+
+      builder.Services.AddSharedKernel();
+      builder.Services.AddCoreServices();
+
+      string? jwtPublicSigningKey = builder.Configuration["Authentication:Schemes:Bearer:PublicSigningKey"];
+      string? jwtPrivateSigningKey = builder.Configuration["Authentication:Schemes:Bearer:PrivateSigningKey"];
+      string? jwtIssuer = builder.Configuration["Authentication:Schemes:Bearer:ValidIssuer"];
+      string? jwtAudiences = builder.Configuration["Authentication:Schemes:Bearer:ValidAudiences"];
+
+      builder.Services
+              .AddAuthentication(
+                   o => {
+                     o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                     o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                   });
+      builder.Services.AddAuthenticationJwtBearer(
+                   signingKeyOptions => {
+                     // PEM+base64 encoded public-key
+                     signingKeyOptions.SigningKey = jwtPublicSigningKey;
+                     signingKeyOptions.SigningStyle = TokenSigningStyle.Asymmetric;
+                     signingKeyOptions.KeyIsPemEncoded = true;
+                   },
+                   jwtBearerOptions => {
+                     jwtBearerOptions.TokenValidationParameters.ValidIssuer = jwtIssuer;
+                     jwtBearerOptions.TokenValidationParameters.ValidAudience = jwtAudiences;
+                     jwtBearerOptions.TokenValidationParameters.ValidateAudience = true;
+                     jwtBearerOptions.TokenValidationParameters.ValidateIssuer = true;
+                     jwtBearerOptions.TokenValidationParameters.ValidateLifetime = true;
+                     jwtBearerOptions.TokenValidationParameters.ValidateIssuerSigningKey = true;
+                     jwtBearerOptions.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtPrivateSigningKey!));
+                   }).AddAuthorizationBuilder()
+        .AddPolicy("AdministratorsOnly", x => x
+                .RequireRole("Administrator")
+                .RequireClaim("AdministratorID")
+                .RequireClaim("Username")
+                .RequireClaim("UserID"))
+        .AddPolicy("ManagersOnly", x => x
+                .RequireRole("Manager")
+                .RequireClaim("ManagerID")
+                .RequireClaim("Username")
+                .RequireClaim("UserID"))
+        .AddPolicy("EmployeeID", x => x
+                .RequireRole("Employee")
+                .RequireClaim("EmployeeID")
+                .RequireClaim("UserID"));
+      builder.Services.AddFastEndpoints().SwaggerDocument(o => {
+        o.ShortSchemaNames = true;
+        o.AutoTagPathSegmentIndex = 2;
+        o.DocumentSettings = s => {
+          s.Title = "DaySpaPet API";
+          s.Version = "v1";
+          s.OperationProcessors.Add(new AddRequestOriginClockTimeZoneId(_ => _.Strict = true));
+        };
+      });
+      // builder.Services.AddFastEndpointsApiExplorer();
+
+      ConfigureMediatR(builder);
+
+      // Infrastructure
+      builder.Services.AddHttpContextAccessor();
+      builder.AddInfrastructureServices();
+
+      // add list services for diagnostic purposes - see https://github.com/ardalis/AspNetCoreStartupServices
+      builder.Services.Configure<ServiceConfig>(config => {
+        config.Services = new List<ServiceDescriptor>(builder.Services);
+
+        // optional - default path to view services is /listallservices - recommended to choose your own path
+        config.Path = "/listservices";
+      });
+
+
+      WebApplication app = builder.Build();
+
+      if (app.Environment.IsDevelopment()) {
+        app.UseDeveloperExceptionPage();
+        app.UseShowAllServicesMiddleware(); // see https://github.com/ardalis/AspNetCoreStartupServices
+      } else {
+        app.UseDefaultExceptionHandler(); // from FastEndpoints
+        app.UseHsts();
+      }
+
+      app.MapDefaultEndpoints();
+
+      //Add support to logging request with SERILOG
+      app.UseSerilogRequestLogging();
+
+      // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+      app.UseSwaggerUi(c => {
+        c.DocumentPath = "/swagger/v1/swagger.json";
+        c.DocumentTitle = "DaySpaPet API v1";
+      });
+
+      app.UseAuthentication();
+      app.UseAuthorization();
+      app.UseFastEndpoints()
+        .UseSwaggerGen();
+
+      app.UseHttpsRedirection();
+
+      BootstrapDatabase(builder, app);
+
+      app.Run();
+    } catch (Exception ex) {
+      Debugger.Break();
+      Log.Fatal(ex, "Application terminated unexpectedly");
+    } finally {
+      Log.CloseAndFlush();
+    }
+  }
 }
+
+// Make the implicit Program.cs class public, so integration tests can reference the correct assembly for host building
+public partial class Program {}

@@ -5,6 +5,7 @@ using DaySpaPet.WebApi.Core.PetAggregate;
 using DaySpaPet.WebApi.Infrastructure.Data.BB.Extensions;
 using DaySpaPet.WebApi.SharedKernel;
 using NodaTime;
+using NodaTime.Extensions;
 using System.Globalization;
 
 namespace DaySpaPet.WebApi.Infrastructure.Data.BB;
@@ -73,7 +74,7 @@ public sealed class BubbleBuddiesDatabaseSeeder {
             .RuleFor(c => c.CreatedAtTimeZoneId, (f, c) => GenerateCreatedAtTimeZoneId(c.CreatedAtServerInstantUtc))
             .RuleFor(c => c.CreatedAtOriginLocalDateTime, (f, c) => GenerateCreatedAtOriginLocalDateTime(c.CreatedAtServerInstantUtc))
             .RuleFor(c => c.EmailAddress, f => f.Person.Email.OrNull(f, 0.33f))
-            .RuleFor(c => c.ModifiedAtServerInstantUtc, f => f.Random.Bool() ? Instant.FromDateTimeUtc(f.Date.Between(_spaOpenedDateTime, DateTime.UtcNow)) : null)
+            .RuleFor(c => c.ModifiedAtServerInstantUtc, f => f.Random.Bool() ? f.Noda().Instant.Between(_spaOpenedDateTime.ToInstant(), DateTime.Now.ToInstant()) : null)
             .RuleFor(c => c.ModifiedAtTimeZoneId, (f, c) => c.ModifiedAtServerInstantUtc.HasValue ? _spaTimeZone.Id : null)
             .RuleFor(c => c.ModifiedAtDaylightSavingTime, (f, c) => c.ModifiedAtServerInstantUtc.HasValue && c.ModifiedAtServerInstantUtc.Value.InZone(_spaTimeZone).IsDaylightSavingTime())
             .RuleFor(c => c.ModifiedAtOriginLocalDateTime, (f, c) => c.ModifiedAtServerInstantUtc.HasValue ? c.ModifiedAtServerInstantUtc.Value.InZone(_spaTimeZone).LocalDateTime : null);

@@ -6,11 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Data\AppDbContext.cs~RF11a5a565.TMP" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" />
+    <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" />
     <PackageReference Include="Bogus" />
     <PackageReference Include="EntityFrameworkCore.Exceptions.SqlServer" />
     <PackageReference Include="FastEndpoints.Security" />
@@ -22,10 +19,11 @@
     <PackageReference Include="Microsoft.Extensions.Logging" />
     <PackageReference Include="NodaTime.Bogus" />
     <PackageReference Include="Serilog" />
-    <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" />
+    <!--<PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" />-->
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\EFCore.SqlServer.NodaTime\src\SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime\SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime.csproj" />
     <ProjectReference Include="..\DaySpaPet.WebApi.SharedKernel\DaySpaPet.WebApi.SharedKernel.csproj" />
     <ProjectReference Include="..\DaySpaPet.WebApi.UseCases\DaySpaPet.WebApi.UseCases.csproj" />
     <ProjectReference Include="..\DaySpaPet.WebApi.Core\DaySpaPet.WebApi.Core.csproj" />

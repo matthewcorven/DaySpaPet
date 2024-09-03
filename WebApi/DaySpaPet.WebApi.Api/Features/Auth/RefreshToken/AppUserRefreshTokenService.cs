@@ -14,15 +14,15 @@ public class AppUserRefreshTokenService : RefreshTokenService<TokenRequest, Toke
   private readonly IAppUserAuthenticationService _userAuthenticationService;
   private readonly AppUserRequestContext _appUserRequestContext;
 
-  public AppUserRefreshTokenService(
-    IConfiguration config, 
-    Serilog.ILogger logger,
-    IAppUserAuthenticationService userAuthenticationService, 
-    AppUserRequestContext appUserRequestContext) {
-    
-    _logger = logger;
-    _userAuthenticationService = userAuthenticationService;
-    _appUserRequestContext = appUserRequestContext;
+  public AppUserRefreshTokenService(IServiceScopeFactory serviceScopeFactory) {
+
+    using IServiceScope scope = serviceScopeFactory.CreateScope();
+    IServiceProvider serviceProvider = scope.ServiceProvider;
+
+    IConfiguration config = serviceProvider.GetRequiredService<IConfiguration>();
+    _logger = serviceProvider.GetRequiredService<Serilog.ILogger>();
+    _userAuthenticationService = serviceProvider.GetRequiredService<IAppUserAuthenticationService>();
+    _appUserRequestContext = serviceProvider.GetRequiredService<AppUserRequestContext>();
 
     IConfigurationSection authSchemeBearer = config.GetRequiredSection("Authentication:Schemes:Bearer");
     if (!authSchemeBearer.TryGetRequiredConfiguration(_logger, "PrivateSigningKey", out string? jwtPrivateSigningKey) ||
